@@ -7,7 +7,7 @@ Template = Literal[
     "corporate", "academic", "startup", "minimal",
     "creative", "nature", "futuristic", "luxury"
 ]
-DeckStatus = Literal["outline", "analyze", "content", "optimize", "layout", "review", "done", "error"]
+DeckStatus = Literal["outline", "analyze", "content", "optimize", "layout", "design", "images", "adjust", "review", "done", "error"]
 
 
 class DeckRequest(BaseModel):
@@ -80,6 +80,7 @@ class SlideContent(BaseModel):
     layout: Optional[SlideLayoutResponse] = None # Added layout info
     notes: Optional[str] = None
     content_role: Optional[Literal["outline", "detail", "summary"]] = Field(None, description="Role of the slide: outline (use bullet points), detail (use paragraph), or summary (use table)")
+    layout_adjustments: Optional[dict] = Field(default_factory=dict, description="Layout adjustment hints from LayoutAdjustmentAgent")
 
 
 

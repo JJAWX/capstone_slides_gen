@@ -4,6 +4,9 @@ export type DeckStatus =
   | "content" 
   | "optimize" 
   | "layout" 
+  | "design"
+  | "images"
+  | "adjust"
   | "review" 
   | "done" 
   | "error";

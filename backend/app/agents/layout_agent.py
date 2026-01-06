@@ -33,10 +33,30 @@ class LayoutAgent(BaseAgent):
         }
     
     async def assign_layout(self, slide: SlideContent) -> SlideContent:
+        # Analyze content characteristics
+        content_text = ""
+        if slide.content:
+            content_text = " ".join(slide.content)
+        elif slide.paragraph:
+            content_text = slide.paragraph
+        
+        char_count = len(content_text)
+        has_long_fields = any(len(field) > 20 for field in (slide.content or [])) or len(slide.paragraph or "") > 20
+        
+        # Determine content complexity
+        complexity = "simple"
+        if char_count > 100:
+            complexity = "complex"
+        elif char_count > 50:
+            complexity = "medium"
+        
         result = await self.process(
             title=slide.title,
-            content=slide.content,
-            slide_type=slide.slideType
+            content=content_text,
+            slide_type=slide.slideType,
+            char_count=char_count,
+            has_long_fields=has_long_fields,
+            complexity=complexity
         )
         
         layout_info = SlideLayoutResponse(

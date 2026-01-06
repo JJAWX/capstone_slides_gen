@@ -5,13 +5,28 @@ from ..agents.design_agent import DesignAgent
 from ..agents.review_agent import ReviewAgent
 from ..agents.layout_agent import LayoutAgent
 from ..agents.image_agent import ImageAgent
+from ..agents.image_search_agent import ImageSearchAgent
+from ..agents.layout_adjustment_agent import LayoutAdjustmentAgent
 from ..models import DeckRequest, SlideContent
 import logging
 
 logger = logging.getLogger(__name__)
 
 class WorkflowManager:
-    """Manages the sophisticated PPT generation workflow."""
+    """
+    Manages the sophisticated PPT generation workflow.
+    
+    Workflow Steps:
+    1. 大纲 (Outline) - Strategic outline creation
+    2. 权重布局 (Weighted Layout) - Structure analysis & slide allocation
+    3. 内容生成 (Content Generation) - Parallel content development
+    4. 背景嵌入 (Background Embedding) - Image suggestions
+    5. 字体颜色调整 (Font Color Adjustment) - Auto contrast based on background
+    6. 图片搜索 (Image Search) - Find images for sparse slides
+    7. 布局调整 (Layout Adjustment) - Validate text overflow & image sizes
+    8. 最终检查 (Final Review) - Quality review and polish
+    9. 生成完毕 (Generation Complete)
+    """
     
     def __init__(self):
         self.outline_agent = OutlineAgent()
@@ -20,6 +35,8 @@ class WorkflowManager:
         self.review_agent = ReviewAgent()
         self.layout_agent = LayoutAgent()
         self.image_agent = ImageAgent()
+        self.image_search_agent = ImageSearchAgent()
+        self.layout_adjustment_agent = LayoutAdjustmentAgent()
     
     async def execute_workflow(self, deck_id: str, request: DeckRequest, storage: Dict[str, Any]) -> tuple[List[SlideContent], Dict[str, Any]]:
         """
@@ -27,36 +44,45 @@ class WorkflowManager:
         Returns: (slides, design_config)
         """
         
-        # Step 1: Strategic Outline Creation (SECTIONS)
-        await self._update_progress(storage, deck_id, "outline", 10, "Creating strategic outline structure...")
+        # Step 1: 大纲 - Strategic Outline Creation
+        await self._update_progress(storage, deck_id, "outline", 10, "📋 Creating strategic outline structure...")
         outline = await self.outline_agent.generate_outline(request)
         
-        # Step 2: Structure Analysis & Expansion (LAYOUT logic)
-        await self._update_progress(storage, deck_id, "analyze", 20, "Analyzing structure and allocating slides...")
+        # Step 2: 权重布局 - Structure Analysis & Expansion
+        await self._update_progress(storage, deck_id, "analyze", 18, "⚖️ Analyzing structure and allocating slides by weight...")
         slide_blueprints = self._expand_outline_to_slides(outline, request.slideCount)
         
-        # Step 3: Concurrent Content Development
-        await self._update_progress(storage, deck_id, "content", 35, f"Developing content for {len(slide_blueprints)} slides in parallel...")
+        # Step 3: 内容生成 - Concurrent Content Development
+        await self._update_progress(storage, deck_id, "content", 30, f"✍️ Generating content for {len(slide_blueprints)} slides...")
         detailed_slides = await self.content_agent.generate_all_content(slide_blueprints, request, outline.title)
         
         # Step 4: Content Optimization
-        await self._update_progress(storage, deck_id, "optimize", 50, "Optimizing content for impact...")
+        await self._update_progress(storage, deck_id, "optimize", 42, "🔧 Optimizing content for impact...")
         optimized_content = await self._optimize_content(detailed_slides, request)
         
         # Step 5: Layout Selection (Using Manual KB)
-        await self._update_progress(storage, deck_id, "layout", 65, "Selecting optimal python-pptx layouts...")
+        await self._update_progress(storage, deck_id, "layout", 52, "📐 Selecting optimal layouts based on content analysis...")
         laid_out_content = await self.layout_agent.assign_layouts_all(optimized_content)
         
-        # Step 6: Visual Design
-        await self._update_progress(storage, deck_id, "layout", 75, "Planning visual design scheme...")
+        # Step 6: 背景嵌入 - Visual Design & Background Images
+        await self._update_progress(storage, deck_id, "design", 60, "🎨 Planning visual design and background images...")
         design_config = await self.design_agent.generate_design(request)
-        
-        # Step 6.5: Image Suggestions
-        await self._update_progress(storage, deck_id, "layout", 78, "Finding relevant images...")
         laid_out_content = await self.image_agent.suggest_images(laid_out_content, outline.title, request.template)
         
-        # Step 7: Final Review & Assembly
-        await self._update_progress(storage, deck_id, "review", 85, "Final quality review and assembly...")
+        # Step 7: 图片搜索 - Find images for sparse slides (< 100 chars)
+        await self._update_progress(storage, deck_id, "images", 70, "🔍 Finding relevant images for sparse slides...")
+        laid_out_content = await self.image_search_agent.find_images_for_sparse_slides(
+            laid_out_content, 
+            outline.title,
+            max_text_length=100
+        )
+        
+        # Step 8: 布局调整 - Validate & Adjust Layouts
+        await self._update_progress(storage, deck_id, "adjust", 80, "📏 Validating layout and adjusting text overflow...")
+        laid_out_content = self.layout_adjustment_agent.validate_and_adjust_all(laid_out_content)
+        
+        # Step 9: 最终检查 - Final Review & Assembly
+        await self._update_progress(storage, deck_id, "review", 90, "✅ Final quality review and assembly...")
         final_content = await self.review_agent.review_slides(laid_out_content, outline.title, request.audience)
         
         return final_content, design_config

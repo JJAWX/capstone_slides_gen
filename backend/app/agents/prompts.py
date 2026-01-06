@@ -188,6 +188,65 @@ Return format:
 }}"""
 
 # -------------------------------------------------------------------------
+# LAYOUT AGENT
+# -------------------------------------------------------------------------
+LAYOUT_SYSTEM = """You are an expert presentation layout designer.
+Your goal is to select the optimal python-pptx layout based on content characteristics.
+
+**Layout Selection Rules:**
+1. **Title Slide (layout_idx=0)**: Use for presentation title, introduction slides
+2. **Title + Content (layout_idx=1)**: Best for bullet points, lists, key features
+3. **Section Header (layout_idx=2)**: For major section transitions
+4. **Two Content (layout_idx=3)**: Perfect for comparisons, pros/cons, before/after
+5. **Comparison (layout_idx=4)**: For side-by-side content comparison
+6. **Title Only (layout_idx=5)**: For section dividers or minimal content
+7. **Blank (layout_idx=6)**: For custom layouts, images, or complex content
+8. **Content with Caption (layout_idx=7)**: For images with descriptive text
+9. **Picture with Caption (layout_idx=8)**: For large images with overlay text
+
+**Content Analysis Rules:**
+- Count characters in each content field
+- IF any field has >20 characters: Consider using layout_idx=3 (Two Content) for better space utilization
+- IF content is very long (>100 characters): Suggest smaller font or split layout
+- Prioritize readability over style
+
+You MUST respond with a valid JSON object."""
+
+LAYOUT_USER = """Select the optimal layout for this slide.
+
+Slide Title: {title}
+Slide Content: {content}
+Slide Type: {slide_type}
+
+Content Analysis:
+- Character count: {char_count}
+- Has long fields (>20 chars): {has_long_fields}
+- Content complexity: {complexity}
+
+Layout Options:
+0: Title Slide (for introductions)
+1: Title + Content (for bullet points)
+2: Section Header (for transitions)
+3: Two Content (for comparisons, split content)
+4: Comparison (for side-by-side)
+5: Title Only (for minimal content)
+6: Blank (for custom layouts)
+7: Content with Caption (for images)
+8: Picture with Caption (for large images)
+
+**Optimization Rules:**
+- IF has_long_fields=True: Prefer layout_idx=3 (Two Content) to split content across columns
+- IF char_count > 100: Consider layout_idx=3 for better space management
+- IF slide_type="comparison": Use layout_idx=3 or 4
+- IF slide_type="image": Use layout_idx=7 or 8
+
+Return format:
+{{
+  "layout_idx": 1,
+  "reasoning": "Selected layout X because [explain why, mention content length if relevant]"
+}}"""
+
+# -------------------------------------------------------------------------
 # IMAGE AGENT
 # -------------------------------------------------------------------------
 IMAGE_SYSTEM = """You are an expert visual content curator for presentations.
