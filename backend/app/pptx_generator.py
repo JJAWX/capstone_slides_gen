@@ -8,6 +8,8 @@ from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.dml.color import RGBColor
 from dotenv import load_dotenv
 from .models import SlideContent
+import requests
+from io import BytesIO
 
 # Load environment variables from backend/.env
 backend_dir = Path(__file__).resolve().parent.parent
@@ -101,7 +103,13 @@ class PPTXGenerator:
                 layout = prs.slide_layouts[1] 
                 
             slide = prs.slides.add_slide(layout)
-            self._set_slide_background(slide, colors)
+            
+            # Set background (image or color)
+            if slide_content.background_image_url:
+                self._set_slide_background_image(slide, slide_content.background_image_url)
+            else:
+                self._set_slide_background(slide, colors)
+            
             self._fill_slide_content(slide, slide_content, colors, layout_idx)
 
         file_path = os.path.join(self.output_dir, f"{deck_id}.pptx")
@@ -124,7 +132,7 @@ class PPTXGenerator:
         if slide.shapes.title:
             slide.shapes.title.text = content.title
             for paragraph in slide.shapes.title.text_frame.paragraphs:
-                paragraph.font.size = Pt(40) if layout_idx == 0 else Pt(32)
+                paragraph.font.size = Pt(36) if layout_idx == 0 else Pt(28)
                 paragraph.font.color.rgb = colors.get("primary", RGBColor(0,51,102))
                 paragraph.font.bold = True
                 
@@ -136,10 +144,14 @@ class PPTXGenerator:
             return
 
         # B. IMAGE SLIDE
-        if content.slideType == "image" or content.image_description:
-            # If layout already has picture placeholder (idx 8 often), use it
-            # Otherwise add placeholder
-            self._add_image_placeholder(slide, content.image_description, colors)
+        if content.slideType == "image" or content.image_description or content.image_url:
+            # Try to use actual image from URL if available
+            if content.image_url:
+                self._add_image_from_url(slide, content.image_url)
+            else:
+                # Fallback to placeholder
+                self._add_image_placeholder(slide, content.image_description, colors)
+            
             # Add text if exists
             if content.content and len(slide.placeholders) > 1:
                  # Check if placeholder 1 is text
@@ -173,7 +185,7 @@ class PPTXGenerator:
                 subtitle = slide.placeholders[1]
                 subtitle.text = content.content[0]
                 for p in subtitle.text_frame.paragraphs:
-                    p.font.size = Pt(24)
+                    p.font.size = Pt(20)
                     p.font.color.rgb = colors.get("secondary", RGBColor(100,100,100))
                     
         elif layout_idx == 1: # Title + Content
@@ -234,9 +246,60 @@ class PPTXGenerator:
                     cell = table.cell(r+1, c)
                     cell.text = str(cell_data)
                     for p in cell.text_frame.paragraphs:
-                        p.font.size = Pt(14)
+                        p.font.size = Pt(12)
                         p.font.color.rgb = colors.get("text_main", RGBColor(0,0,0))
                         p.alignment = PP_ALIGN.LEFT
+
+    def _download_image(self, url: str) -> BytesIO:
+        """Download image from URL and return as BytesIO object."""
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return BytesIO(response.content)
+        except Exception as e:
+            logger.error(f"Failed to download image from {url}: {e}")
+            return None
+    
+    def _set_slide_background_image(self, slide, image_url: str):
+        """Set slide background to an image from URL."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                # python-pptx doesn't directly support background images easily
+                # Workaround: Add image as a shape covering the entire slide and send to back
+                left = Inches(0)
+                top = Inches(0)
+                width = Inches(10)
+                height = Inches(7.5)
+                
+                pic = slide.shapes.add_picture(image_stream, left, top, width=width, height=height)
+                
+                # Send to back (move to first position in shape collection)
+                slide.shapes._spTree.remove(pic._element)
+                slide.shapes._spTree.insert(2, pic._element)  # Insert after background
+                
+                logger.info(f"Added background image from {image_url}")
+        except Exception as e:
+            logger.error(f"Failed to set background image: {e}")
+    
+    def _add_image_from_url(self, slide, image_url: str):
+        """Add an image from URL to the slide."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                # Center the image
+                left = Inches(2.0)
+                top = Inches(2.0)
+                width = Inches(6.0)
+                
+                slide.shapes.add_picture(image_stream, left, top, width=width)
+                logger.info(f"Added image from {image_url}")
+            else:
+                # Fallback to placeholder
+                self._add_image_placeholder(slide, "Image unavailable", {"secondary": RGBColor(200,200,200)})
+        except Exception as e:
+            logger.error(f"Failed to add image from URL: {e}")
+            self._add_image_placeholder(slide, f"Image error: {str(e)[:50]}", {"secondary": RGBColor(200,200,200)})
 
     def _add_image_placeholder(self, slide, description, colors):
         """Add a placeholder shape for an image."""
@@ -268,23 +331,23 @@ class PPTXGenerator:
         text_frame.clear()
         p = text_frame.add_paragraph()
         p.text = text
-        p.font.size = Pt(24)
+        p.font.size = Pt(18)
         p.font.color.rgb = colors.get("text_main", RGBColor(0,0,0))
         p.alignment = PP_ALIGN.JUSTIFY
-        p.space_after = Pt(12)
+        p.space_after = Pt(10)
 
     def _populate_text_frame(self, text_frame, points, colors):
         text_frame.clear()
         count = len(points)
         if count <= 3:
-            base_size = 28
-            spacing = 20
+            base_size = 22
+            spacing = 14
         elif count <= 5:
-            base_size = 24
-            spacing = 16
-        else:
-            base_size = 20
+            base_size = 18
             spacing = 12
+        else:
+            base_size = 16
+            spacing = 10
 
         for point in points:
             p = text_frame.add_paragraph()

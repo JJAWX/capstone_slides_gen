@@ -45,7 +45,8 @@ class ContentAgent(BaseAgent):
                 "presentation_title": context["title"],
                 "current_content": ", ".join(slide.content) if slide.content else "",
                 "audience": context["audience"],
-                "template": context["template"]
+                "template": context["template"],
+                "content_role": slide.content_role or "detail"  # Default to detail if not specified
             })
             
         # Execute batch if there are items

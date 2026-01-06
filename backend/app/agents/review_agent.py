@@ -62,6 +62,8 @@ class ReviewAgent(BaseAgent):
                     content=s_dict.get("content", []),
                     paragraph=s_dict.get("paragraph"),
                     image_description=s_dict.get("image_description"),
+                    image_url=original.image_url,  # Preserve image URLs
+                    background_image_url=original.background_image_url,  # Preserve background URLs
                     table=table_data,
                     # CRITICAL: Preserve the layout assigned by LayoutAgent
                     layout=original.layout,

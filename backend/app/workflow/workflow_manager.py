@@ -4,6 +4,7 @@ from ..agents.content_agent import ContentAgent
 from ..agents.design_agent import DesignAgent
 from ..agents.review_agent import ReviewAgent
 from ..agents.layout_agent import LayoutAgent
+from ..agents.image_agent import ImageAgent
 from ..models import DeckRequest, SlideContent
 import logging
 
@@ -18,6 +19,7 @@ class WorkflowManager:
         self.design_agent = DesignAgent()
         self.review_agent = ReviewAgent()
         self.layout_agent = LayoutAgent()
+        self.image_agent = ImageAgent()
     
     async def execute_workflow(self, deck_id: str, request: DeckRequest, storage: Dict[str, Any]) -> tuple[List[SlideContent], Dict[str, Any]]:
         """
@@ -49,6 +51,10 @@ class WorkflowManager:
         await self._update_progress(storage, deck_id, "layout", 75, "Planning visual design scheme...")
         design_config = await self.design_agent.generate_design(request)
         
+        # Step 6.5: Image Suggestions
+        await self._update_progress(storage, deck_id, "layout", 78, "Finding relevant images...")
+        laid_out_content = await self.image_agent.suggest_images(laid_out_content, outline.title, request.template)
+        
         # Step 7: Final Review & Assembly
         await self._update_progress(storage, deck_id, "review", 85, "Final quality review and assembly...")
         final_content = await self.review_agent.review_slides(laid_out_content, outline.title, request.audience)
@@ -58,12 +64,14 @@ class WorkflowManager:
     def _expand_outline_to_slides(self, outline, target_count: int) -> List[SlideContent]:
         """
         Expands high-level sections into individual slide blueprints based on weight.
+        Structure: Title -> [Section Title -> Details... -> Section Summary]... -> Final Summary
+        Flexibly adapts based on allocated slide count for each section.
         """
         sections = outline.sections
         total_weight = sum(s.weight for s in sections)
         
-        # Reserve 1 slide for Title
-        available_slides = max(1, target_count - 1)
+        # Reserve 1 slide for Title + 1 for final summary
+        available_slides = max(2, target_count - 2)
         
         slide_blueprints = []
         
@@ -74,29 +82,91 @@ class WorkflowManager:
             slideType="title"
         ))
         
-        # 2. Distribute remaining slides
+        # 2. Distribute remaining slides to sections
         for section in sections:
-            # Calculate proportion
+            # Calculate proportion based on weight
             ratio = section.weight / total_weight
             num_slides = max(1, round(ratio * available_slides))
             
-            # Create blueprints for this section
+            # Adaptive Structure based on allocated slides:
             if num_slides == 1:
+                # Minimal: Just section outline (bullet points)
                 slide_blueprints.append(SlideContent(
                     title=section.title,
-                    content=section.key_points, # Pass hints to content agent
-                    slideType="content"
+                    content=section.key_points,
+                    slideType="content",
+                    content_role="outline"
                 ))
-            else:
-                # Split section into multiple parts
-                for i in range(num_slides):
+                
+            elif num_slides == 2:
+                # Small section: Section Title + 1 Detail
+                slide_blueprints.append(SlideContent(
+                    title=section.title,
+                    content=section.key_points,
+                    slideType="content",
+                    content_role="outline"
+                ))
+                slide_blueprints.append(SlideContent(
+                    title=f"{section.title} - Details",
+                    content=[f"Detailed explanation of {section.title}"],
+                    slideType="content",
+                    content_role="detail"
+                ))
+                
+            elif num_slides == 3:
+                # Medium section: Section Title + 2 Details (no summary yet)
+                slide_blueprints.append(SlideContent(
+                    title=section.title,
+                    content=section.key_points,
+                    slideType="content",
+                    content_role="outline"
+                ))
+                # Split key points for multiple detail slides
+                num_details = 2
+                for i in range(num_details):
                     slide_blueprints.append(SlideContent(
-                        title=f"{section.title} (Part {i+1})",
-                        content=[f"Focus on part {i+1} of {section.title}. Key points: {', '.join(section.key_points)}"],
-                        slideType="content"
+                        title=f"{section.title} - Part {i+1}",
+                        content=[f"Aspect {i+1}: {section.key_points[i] if i < len(section.key_points) else 'Additional details'}"],
+                        slideType="content",
+                        content_role="detail"
                     ))
                     
-        # Ensure we don't exceed target too much (or too little), but specific truncation isn't strict here.
+            else:
+                # Large section (4+ slides): Section Title + Details + Section Summary
+                # Pattern: 1 outline + (n-2) details + 1 summary
+                slide_blueprints.append(SlideContent(
+                    title=section.title,
+                    content=section.key_points,
+                    slideType="content",
+                    content_role="outline"
+                ))
+                
+                # Add detail slides (num_slides - 2, at least 2)
+                num_details = num_slides - 2
+                for i in range(num_details):
+                    slide_blueprints.append(SlideContent(
+                        title=f"{section.title} - Part {i+1}",
+                        content=[f"Aspect {i+1}: {section.key_points[i] if i < len(section.key_points) else 'Additional details'}"],
+                        slideType="content",
+                        content_role="detail"
+                    ))
+                
+                # Add section summary (table)
+                slide_blueprints.append(SlideContent(
+                    title=f"{section.title} - Summary",
+                    content=[f"Key takeaways from {section.title}"],
+                    slideType="content",
+                    content_role="summary"
+                ))
+        
+        # 3. Final Summary Slide (always included)
+        slide_blueprints.append(SlideContent(
+            title="Conclusion",
+            content=["Overall summary and key takeaways from this presentation"],
+            slideType="content",
+            content_role="summary"
+        ))
+                    
         return slide_blueprints
     
     async def _optimize_content(self, slides: List[SlideContent], request: DeckRequest) -> List[SlideContent]:
@@ -143,7 +213,10 @@ class WorkflowManager:
             paragraph=slide.paragraph,
             table=slide.table,
             image_description=slide.image_description,
-            notes=slide.notes
+            image_url=slide.image_url,
+            background_image_url=slide.background_image_url,
+            notes=slide.notes,
+            content_role=slide.content_role
         )
     
     async def _final_review(self, slides: List[SlideContent]) -> List[SlideContent]:

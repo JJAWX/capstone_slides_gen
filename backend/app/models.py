@@ -74,9 +74,12 @@ class SlideContent(BaseModel):
     paragraph: Optional[str] = Field(None, description="Detailed paragraph text for narrative slides")
     table: Optional[TableData] = Field(None, description="Structured table data")
     image_description: Optional[str] = Field(None, description="Description of an image to include")
+    image_url: Optional[str] = Field(None, description="URL of the image to embed")
+    background_image_url: Optional[str] = Field(None, description="URL of the background image")
     slideType: Literal["title", "content", "comparison", "data", "table", "image", "narrative"] = "content"
     layout: Optional[SlideLayoutResponse] = None # Added layout info
     notes: Optional[str] = None
+    content_role: Optional[Literal["outline", "detail", "summary"]] = Field(None, description="Role of the slide: outline (use bullet points), detail (use paragraph), or summary (use table)")
 
 
 
