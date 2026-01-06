@@ -191,7 +191,7 @@ export default function Home() {
                       currentStep={statusData.currentStep}
                       error={statusData.error}
                       deckId={deckId || undefined}
-                      onDownload={handleDownload}
+                      onDownload={() => handleDownload(deckId || undefined)}
                     />
                   )
                 )}

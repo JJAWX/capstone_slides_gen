@@ -143,8 +143,8 @@ class PPTXGenerator:
             self._add_table(slide, content.table, colors)
             return
 
-        # B. IMAGE SLIDE
-        if content.slideType == "image" or content.image_description or content.image_url:
+        # B. IMAGE SLIDE - dedicated image slides
+        if content.slideType == "image" or content.image_description:
             # Try to use actual image from URL if available
             if content.image_url:
                 self._add_image_from_url(slide, content.image_url)
@@ -162,21 +162,25 @@ class PPTXGenerator:
 
         # C. NARRATIVE / PARAGRAPH
         if content.paragraph:
-            # Use main body placeholder if available
-            if len(slide.placeholders) > 1:
-                body = slide.placeholders[1]
-                if hasattr(body, "text_frame"):
-                    self._populate_paragraph(body.text_frame, content.paragraph, colors)
+            # If image available, use text-on-left + image-on-right layout
+            if content.image_url:
+                self._add_text_with_image_layout(slide, content, colors)
             else:
-                # Fallback: Create custom textbox for Layout 5 (Title Only) or similar
-                left = Inches(1.0)
-                top = Inches(2.0)
-                width = Inches(8.0)
-                height = Inches(5.0)
-                txBox = slide.shapes.add_textbox(left, top, width, height)
-                self._populate_paragraph(txBox.text_frame, content.paragraph, colors)
-                # Enable word wrap for the new textbox
-                txBox.text_frame.word_wrap = True
+                # Use main body placeholder if available
+                if len(slide.placeholders) > 1:
+                    body = slide.placeholders[1]
+                    if hasattr(body, "text_frame"):
+                        self._populate_paragraph(body.text_frame, content.paragraph, colors)
+                else:
+                    # Fallback: Create custom textbox for Layout 5 (Title Only) or similar
+                    left = Inches(1.0)
+                    top = Inches(2.0)
+                    width = Inches(8.0)
+                    height = Inches(5.0)
+                    txBox = slide.shapes.add_textbox(left, top, width, height)
+                    self._populate_paragraph(txBox.text_frame, content.paragraph, colors)
+                    txBox.text_frame.word_wrap = True
+            
             return
 
         # D. STANDARD LISTS (Fallback)
@@ -189,7 +193,10 @@ class PPTXGenerator:
                     p.font.color.rgb = colors.get("secondary", RGBColor(100,100,100))
                     
         elif layout_idx == 1: # Title + Content
-            if len(slide.placeholders) > 1:
+            if content.image_url:
+                # Layout: text on left, image on right
+                self._add_list_with_image_layout(slide, content, colors)
+            elif len(slide.placeholders) > 1:
                 self._populate_text_frame(slide.placeholders[1].text_frame, content.content, colors)
                     
         elif layout_idx == 3: # Two Content
@@ -208,6 +215,70 @@ class PPTXGenerator:
                 except AttributeError:
                     pass
 
+    def _download_image(self, url: str) -> BytesIO:
+        """Download image from URL and return as BytesIO object."""
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return BytesIO(response.content)
+        except Exception as e:
+            logger.error(f"Failed to download image from {url}: {e}")
+            return None
+    
+    def _set_slide_background_image(self, slide, image_url: str):
+        """Set slide background to an image from URL."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                left = Inches(0)
+                top = Inches(0)
+                width = Inches(10)
+                height = Inches(7.5)
+                
+                pic = slide.shapes.add_picture(image_stream, left, top, width=width, height=height)
+                
+                # Send to back (move to first position in shape collection)
+                slide.shapes._spTree.remove(pic._element)
+                slide.shapes._spTree.insert(2, pic._element)
+                
+                logger.info(f"Added background image from {image_url}")
+        except Exception as e:
+            logger.error(f"Failed to set background image: {e}")
+    
+    def _add_image_from_url(self, slide, image_url: str):
+        """Add a large centered image from URL to the slide."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                # Center the image
+                left = Inches(2.0)
+                top = Inches(2.0)
+                width = Inches(6.0)
+                
+                slide.shapes.add_picture(image_stream, left, top, width=width)
+                logger.info(f"Added large image from {image_url}")
+            else:
+                # Fallback to placeholder
+                self._add_image_placeholder(slide, "Image unavailable", {"secondary": RGBColor(200,200,200)})
+        except Exception as e:
+            logger.error(f"Failed to add image from URL: {e}")
+            self._add_image_placeholder(slide, f"Image error: {str(e)[:50]}", {"secondary": RGBColor(200,200,200)})
+    
+    def _add_small_image(self, slide, image_url: str):
+        """Add a smaller image as visual enhancement (right side of slide)."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                # Position on the right side
+                left = Inches(6.5)
+                top = Inches(2.5)
+                width = Inches(3.0)
+                
+                slide.shapes.add_picture(image_stream, left, top, width=width)
+                logger.info(f"Added small image from {image_url}")
+        except Exception as e:
+            logger.error(f"Failed to add small image: {e}")
+    
     def _add_table(self, slide, table_data, colors):
         """Add a table to the slide."""
         rows = table_data.rows
@@ -283,7 +354,7 @@ class PPTXGenerator:
             logger.error(f"Failed to set background image: {e}")
     
     def _add_image_from_url(self, slide, image_url: str):
-        """Add an image from URL to the slide."""
+        """Add a large centered image from URL to the slide."""
         try:
             image_stream = self._download_image(image_url)
             if image_stream:
@@ -293,13 +364,28 @@ class PPTXGenerator:
                 width = Inches(6.0)
                 
                 slide.shapes.add_picture(image_stream, left, top, width=width)
-                logger.info(f"Added image from {image_url}")
+                logger.info(f"Added large image from {image_url}")
             else:
                 # Fallback to placeholder
                 self._add_image_placeholder(slide, "Image unavailable", {"secondary": RGBColor(200,200,200)})
         except Exception as e:
             logger.error(f"Failed to add image from URL: {e}")
             self._add_image_placeholder(slide, f"Image error: {str(e)[:50]}", {"secondary": RGBColor(200,200,200)})
+    
+    def _add_small_image(self, slide, image_url: str):
+        """Add a smaller image as visual enhancement (right side of slide)."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                # Position on the right side
+                left = Inches(6.5)
+                top = Inches(2.5)
+                width = Inches(3.0)
+                
+                slide.shapes.add_picture(image_stream, left, top, width=width)
+                logger.info(f"Added small image from {image_url}")
+        except Exception as e:
+            logger.error(f"Failed to add small image: {e}")
 
     def _add_image_placeholder(self, slide, description, colors):
         """Add a placeholder shape for an image."""
@@ -373,3 +459,108 @@ class PPTXGenerator:
             
             p.space_after = Pt(spacing)
             p.space_before = Pt(spacing/2)
+    
+    def _download_image(self, url: str) -> BytesIO:
+        """Download image from URL and return as BytesIO object."""
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            return BytesIO(response.content)
+        except Exception as e:
+            logger.error(f"Failed to download image from {url}: {e}")
+            return None
+    
+    def _set_slide_background_image(self, slide, image_url: str):
+        """Set slide background to an image from URL."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                left = Inches(0)
+                top = Inches(0)
+                width = Inches(10)
+                height = Inches(7.5)
+                
+                pic = slide.shapes.add_picture(image_stream, left, top, width=width, height=height)
+                
+                # Send to back
+                slide.shapes._spTree.remove(pic._element)
+                slide.shapes._spTree.insert(2, pic._element)
+                
+                logger.info(f"Added background image from {image_url}")
+        except Exception as e:
+            logger.error(f"Failed to set background image: {e}")
+    
+    def _add_image_from_url(self, slide, image_url: str):
+        """Add a large centered image from URL to the slide."""
+        try:
+            image_stream = self._download_image(image_url)
+            if image_stream:
+                left = Inches(2.0)
+                top = Inches(2.0)
+                width = Inches(6.0)
+                
+                slide.shapes.add_picture(image_stream, left, top, width=width)
+                logger.info(f"Added large image from {image_url}")
+            else:
+                self._add_image_placeholder(slide, "Image unavailable", {"secondary": RGBColor(200,200,200)})
+        except Exception as e:
+            logger.error(f"Failed to add image from URL: {e}")
+            self._add_image_placeholder(slide, f"Image error: {str(e)[:50]}", {"secondary": RGBColor(200,200,200)})
+    
+    def _add_text_with_image_layout(self, slide, content, colors):
+        """Layout: paragraph text on left, image on right."""
+        try:
+            # Add text on left side
+            left = Inches(0.8)
+            top = Inches(2.0)
+            width = Inches(5.0)
+            height = Inches(5.0)
+            
+            text_box = slide.shapes.add_textbox(left, top, width, height)
+            self._populate_paragraph(text_box.text_frame, content.paragraph, colors)
+            text_box.text_frame.word_wrap = True
+            
+            # Add image on right side
+            image_stream = self._download_image(content.image_url)
+            if image_stream:
+                img_left = Inches(6.2)
+                img_top = Inches(2.0)
+                img_width = Inches(3.5)
+                
+                slide.shapes.add_picture(image_stream, img_left, img_top, width=img_width)
+                logger.info("Added text-with-image layout")
+        except Exception as e:
+            logger.error(f"Failed to create text-with-image layout: {e}")
+    
+    def _add_list_with_image_layout(self, slide, content, colors):
+        """Layout: bullet list on left, image on right."""
+        try:
+            # Add text on left side
+            left = Inches(0.8)
+            top = Inches(2.0)
+            width = Inches(5.0)
+            height = Inches(5.0)
+            
+            text_box = slide.shapes.add_textbox(left, top, width, height)
+            text_frame = text_box.text_frame
+            text_frame.word_wrap = True
+            
+            # Add bullet points
+            for point in content.content:
+                p = text_frame.add_paragraph()
+                p.text = point
+                p.font.size = Pt(18)
+                p.font.color.rgb = colors.get("text_main", RGBColor(0,0,0))
+                p.space_after = Pt(12)
+            
+            # Add image on right side
+            image_stream = self._download_image(content.image_url)
+            if image_stream:
+                img_left = Inches(6.2)
+                img_top = Inches(2.0)
+                img_width = Inches(3.5)
+                
+                slide.shapes.add_picture(image_stream, img_left, img_top, width=img_width)
+                logger.info("Added list-with-image layout")
+        except Exception as e:
+            logger.error(f"Failed to create list-with-image layout: {e}")

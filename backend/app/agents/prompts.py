@@ -220,7 +220,11 @@ For each slide that needs an image, provide:
 2. A precise Unsplash search query (3-5 keywords)
 3. Reasoning for the choice
 
-For background image requests, suggest a subtle, professional background query.
+ALSO suggest a professional background query that can be used for title and section divider slides.
+Background should be:
+- Subtle and professional (low opacity will be applied)
+- Aligned with the presentation theme
+- Not distracting (abstract patterns, gradients, or minimal textures work best)
 
 Return format:
 {{
@@ -231,6 +235,6 @@ Return format:
       "reasoning": "Represents AI in medical context"
     }}
   ],
-  "background_query": "abstract blue gradient professional"
+  "background_query": "abstract gradient blue professional minimal"
 }}"""
 
