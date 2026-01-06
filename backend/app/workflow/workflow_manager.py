@@ -119,6 +119,11 @@ class WorkflowManager:
     
     def _apply_template_optimization(self, slide: SlideContent, template: str, max_words: Dict) -> SlideContent:
         """Apply template-specific content optimizations."""
+        # For non-content slides (tables, images, narratives), we skip the bullet point optimization
+        # to preserve the integrity of the generated content.
+        if slide.slideType in ["table", "image", "narrative"]:
+            return slide
+
         max_w = max_words.get(template, 12)
         
         optimized_content = []
@@ -134,7 +139,11 @@ class WorkflowManager:
         return SlideContent(
             title=slide.title,
             content=optimized_content,
-            slideType=slide.slideType
+            slideType=slide.slideType,
+            paragraph=slide.paragraph,
+            table=slide.table,
+            image_description=slide.image_description,
+            notes=slide.notes
         )
     
     async def _final_review(self, slides: List[SlideContent]) -> List[SlideContent]:

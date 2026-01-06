@@ -61,11 +61,20 @@ class SlideLayoutResponse(BaseModel):
     notes: Optional[str] = None
 
 
+class TableData(BaseModel):
+    """Model for table content."""
+    headers: list[str]
+    rows: list[list[str]]
+
+
 class SlideContent(BaseModel):
     """Model for individual slide content."""
     title: str
-    content: list[str]
-    slideType: Literal["title", "content", "comparison", "data"] = "content"
+    content: list[str] = Field(default_factory=list, description="Bullet points")
+    paragraph: Optional[str] = Field(None, description="Detailed paragraph text for narrative slides")
+    table: Optional[TableData] = Field(None, description="Structured table data")
+    image_description: Optional[str] = Field(None, description="Description of an image to include")
+    slideType: Literal["title", "content", "comparison", "data", "table", "image", "narrative"] = "content"
     layout: Optional[SlideLayoutResponse] = None # Added layout info
     notes: Optional[str] = None
 

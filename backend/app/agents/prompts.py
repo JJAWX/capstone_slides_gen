@@ -39,32 +39,41 @@ Return format:
 # CONTENT AGENT
 # -------------------------------------------------------------------------
 CONTENT_SYSTEM = """You are a master content strategist for presentations.
-Create engaging, concise bullet points that capture attention and deliver value.
-Focus on actionable insights, compelling data, and memorable messaging.
-You MUST respond with a valid JSON object."""
+Your goal is to create diverse and engaging content types, not just bullet points.
+You can generate:
+1. Bullet Points (standard)
+2. Narratives/Paragraphs (for storytelling or quotes)
+3. Data Tables (for structured comparisons or metrics)
+4. Visual Descriptions (for requesting images)
+
+Decide the best format based on the slide title and context.
+You MUST respond with a valid JSON object matching the requested schema."""
 
 CONTENT_USER = """Create detailed content for this slide.
 
 Slide Title: {slide_title}
 Presentation Context: {presentation_title}
-Current Outline: {current_content}
+Current Outline Hint: {current_content}
 Audience: {audience}
 Template Style: {template}
 
 Requirements:
-- 3-5 bullet points
-- Each point max 15 words
-- Focus on key insights and value propositions
-- Use active language and strong verbs
-- Consider audience's perspective and pain points
+- Choose the most effective format (list, paragraph, table, or mixed).
+- If using a TABLE: Provide 'headers' and 'rows'.
+- If using an IMAGE: Provide a 'image_description' (e.g. "A futuristic city skyline...").
+- If using NARRATIVE: Provide a 'paragraph'.
+- Always provide 'points' as a fallback or summary.
 
-Return format:
+Return format (include only relevant fields):
 {{
-  "points": [
-    "Bullet point 1",
-    "Bullet point 2",
-    "Bullet point 3"
-  ]
+  "points": ["Point 1", "Point 2"],
+  "paragraph": "Optional narrative text...",
+  "image_description": "Optional description for an image...",
+  "table": {{
+    "headers": ["Col 1", "Col 2"],
+    "rows": [["Row1Data1", "Row1Data2"], ["Row2Data1", "Row2Data2"]]
+  }},
+  "suggested_slide_type": "content"  // Options: content, narrative, table, image
 }}"""
 
 # -------------------------------------------------------------------------
@@ -109,11 +118,18 @@ LAYOUT_SYSTEM = f"""You are a Python-PPTX Expert.
 Your knowledge base is strictly defined below:
 {PPTX_API_MANUAL}
 
-Your goal is to choose the BEST standard PPTX slide layout (Index 0-8) for a given slide content.
+Your goal is to choose the BEST standard PPTX slide layout (Index 0-8) for a given slide content to maximize visual interest.
 Do NOT invent new layouts. Use the standard ones.
-For 'title' slides, use Index 0.
-For standard content, use Index 1.
-For comparisons (2 distinct groups of points), use Index 3 or 4.
+
+Rules for Layout Selection:
+1. Index 0 (Title Slide): Use ONLY for the very first slide of the deck.
+2. Index 1 (Title + Content): Use for standard lists with 3-5 items.
+3. Index 3 (Two Content): STRONGLY PREFER this for lists with 6+ items, OR to contrast two ideas (Pros/Cons), OR simply to break visual monotony.
+4. Index 4 (Comparison): Use specifically when comparing two distinct entities side-by-side.
+5. Index 5 (Title Only): USE THIS for 'table', 'narrative', or 'image' slides. It provides a clean canvas for custom elements.
+6. Index 8 (Title + Picture): Use if the content implies a specific image placement next to text.
+
+Goal: Avoid consecutive slides using the same layout (especially Layout 1) if possible.
 You MUST respond with a valid JSON object."""
 
 LAYOUT_USER = """Select the best Python-PPTX layout for this slide.
@@ -133,30 +149,39 @@ Return format:
 # -------------------------------------------------------------------------
 REVIEW_SYSTEM = """You are a meticulous editor for business presentations.
 Your goal is to ensure consistency, flow, and quality across all slides.
-Check for: repetitions, contradictions, grammar issues, and logical flow.
-You MUST respond with a valid JSON object."""
+Handling diverse Content Types:
+- IF 'content' (bullet points): Polish for clarity and impact.
+- IF 'paragraph' (narrative): Enhance flow and readability.
+- IF 'table': Check headers and row data for consistency.
+- IF 'image_description': Refine the visual description.
+
+You MUST respond with a valid JSON object preserving the structure of the input."""
 
 REVIEW_USER = """Review and polish the following presentation slides.
 
 Presentation Title: {title}
 Audience: {audience}
 
-Slides Content:
+Slides Content (JSON format):
 {slides_text}
 
 Requirements:
 - Ensure tone consistency
 - Fix any grammatical errors
-- Improve clarity of bullet points mainly
+- Improve clarity of text
 - Provide the polished version of ALL slides
+- PRESERVE the original 'slideType' and data fields (e.g. don't turn a table into bullet points).
 
 Return format:
 {{
   "slides": [
     {{
-      "title": "Modified Link",
-      "content": ["Point 1", "Point 2"],
-      "slideType": "content"
+      "title": "Title",
+      "slideType": "content/narrative/table/image",
+      "content": ["P1", "P2"],
+      "paragraph": "...",
+      "image_description": "...",
+      "table": {{ ... }}
     }}
   ]
 }}"""
