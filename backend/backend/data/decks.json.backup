@@ -1,0 +1,15 @@
+{
+  "f1e3f746-ee71-4211-bad6-9a2d49b2838a": {
+    "deckId": "f1e3f746-ee71-4211-bad6-9a2d49b2838a",
+    "status": "render",
+    "progress": 80,
+    "currentStep": "Rendering PowerPoint file...",
+    "request": {
+      "prompt": "我要进行星巴克店铺的布局地理位置以及特点分析，来说服投资人星巴克的盈利能力",
+      "slideCount": 10,
+      "audience": "business",
+      "template": "corporate"
+    },
+    "createdAt": "2026-01-06T14:55:31.570069"
+  }
+}
