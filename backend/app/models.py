@@ -4,7 +4,7 @@ from typing import Optional, Literal
 # Type definitions matching frontend
 Audience = Literal["technical", "business", "academic", "general"]
 Template = Literal["corporate", "academic", "startup", "minimal"]
-DeckStatus = Literal["outline", "plan", "fix", "render", "done", "error"]
+DeckStatus = Literal["outline", "analyze", "content", "optimize", "layout", "review", "done", "error"]
 
 
 class DeckRequest(BaseModel):

@@ -32,10 +32,12 @@ trap cleanup INT TERM
 
 # Start FastAPI backend
 echo "📦 Starting FastAPI backend on http://localhost:8000..."
-cd backend
-python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 &
+# Run from root to maintain correct relative paths (e.g. backend/output)
+python3 -m uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000 &
 BACKEND_PID=$!
-cd ..
+# cd backend  <-- Removed cd backend to keep CWD at project root
+# command changed to backend.app.main:app
+# cd ..       <-- Removed cd ..
 
 # Wait a bit for backend to start
 sleep 2

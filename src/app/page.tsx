@@ -71,7 +71,14 @@ export default function Home() {
     try {
       const response = await fetch(`/api/decks/${targetDeckId}/download`);
       if (!response.ok) {
-        throw new Error("Failed to download deck");
+        let errorMsg = "Failed to download deck";
+        try {
+          const errorData = await response.json();
+          errorMsg = errorData.error || errorData.details || errorMsg;
+        } catch (e) {
+          // Ignore json parse error
+        }
+        throw new Error(errorMsg);
       }
 
       const blob = await response.blob();

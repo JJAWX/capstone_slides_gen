@@ -1,4 +1,12 @@
-export type DeckStatus = "outline" | "plan" | "fix" | "render" | "done" | "error";
+export type DeckStatus = 
+  | "outline" 
+  | "analyze" 
+  | "content" 
+  | "optimize" 
+  | "layout" 
+  | "review" 
+  | "done" 
+  | "error";
 
 export type Audience = "technical" | "business" | "academic" | "general";
 export type Template = "corporate" | "academic" | "startup" | "minimal";

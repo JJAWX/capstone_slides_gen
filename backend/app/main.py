@@ -193,6 +193,20 @@ async def download_deck(deck_id: str):
             status_code=500,
             detail="File path not found"
         )
+    
+    # Ensure absolute path
+    if not os.path.isabs(file_path):
+        # Assuming file_path is relative to project root (where script is run)
+        # But just in case, let's resolve it carefully
+        # If it starts with backend/, and we are in root, it is fine
+        file_path = os.path.abspath(file_path)
+
+    if not os.path.exists(file_path):
+        logger.error(f"File not found at path: {file_path}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"File missing on server at {file_path}"
+        )
 
     return FileResponse(
         path=file_path,

@@ -13,22 +13,26 @@ interface DeckStatusProps {
   onDownload?: () => void;
 }
 
-const statusSteps: DeckStatus[] = ["outline", "plan", "fix", "render", "done"];
+const statusSteps: DeckStatus[] = ["outline", "analyze", "content", "optimize", "layout", "review",  "done"];
 
 const statusLabels: Record<DeckStatus, string> = {
   outline: "OUTLINE",
-  plan: "PLAN",
-  fix: "FIX",
-  render: "RENDER",
+  analyze: "ANALYZE",
+  content: "CONTENT",
+  optimize: "OPTIMIZE",
+  layout: "LAYOUT",
+  review: "REVIEW",
   done: "DONE",
   error: "ERROR",
 };
 
 const statusDescriptions: Record<DeckStatus, string> = {
-  outline: "Creating presentation structure",
-  plan: "Planning slide content",
-  fix: "Optimizing layout and text",
-  render: "Generating PowerPoint file",
+  outline: "Generating strategic outline",
+  analyze: "Analyzing audience and strategy",
+  content: "Developing detailed slide content",
+  optimize: "Optimizing flow and clarity",
+  layout: "Planning visual layout",
+  review: "Final quality review",
   done: "Presentation ready",
   error: "Generation failed",
 };
@@ -50,7 +54,7 @@ export default function DeckStatus({
 
   const stepItems = statusSteps.map((step, index) => ({
     title: statusLabels[step],
-    description:
+    subTitle:
       index === currentStepIndex
         ? currentStep || statusDescriptions[step]
         : statusDescriptions[step],
@@ -68,7 +72,7 @@ export default function DeckStatus({
     <Space orientation="vertical" size="large" style={{ width: "100%" }}>
       {error && (
         <Alert
-          message="Generation Error"
+          title="Generation Error"
           description={error}
           type="error"
           showIcon
