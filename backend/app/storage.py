@@ -14,8 +14,14 @@ class DeckStorage:
     Provides thread-safe operations for saving and loading deck metadata.
     """
 
-    def __init__(self, storage_file: str = "backend/data/decks.json"):
-        self.storage_file = storage_file
+    def __init__(self, storage_file: str = None):
+        if storage_file:
+            self.storage_file = storage_file
+        else:
+            # Resolve absolute path relative to this file: backend/app/storage.py -> backend/data/decks.json
+            base_dir = Path(__file__).resolve().parent.parent
+            self.storage_file = str(base_dir / "data" / "decks.json")
+            
         self.lock = threading.Lock()
         self._ensure_storage_dir()
 

@@ -1,5 +1,6 @@
 from .base_agent import BaseAgent
-from ..models import SlideContent, DeckOutline
+from .prompts import CONTENT_SYSTEM, CONTENT_USER
+from ..models import SlideContent, DeckRequest
 from typing import List, Dict, Any
 
 class ContentAgent(BaseAgent):
@@ -12,34 +13,10 @@ class ContentAgent(BaseAgent):
         return 1500
     
     def get_system_prompt(self) -> str:
-        return """You are a master content strategist for presentations.
-Create engaging, concise bullet points that capture attention and deliver value.
-Focus on actionable insights, compelling data, and memorable messaging."""
+        return CONTENT_SYSTEM
     
     def get_user_prompt_template(self) -> str:
-        return """Create detailed content for this slide.
-
-Slide Title: {slide_title}
-Presentation Context: {presentation_title}
-Current Outline: {current_content}
-Audience: {audience}
-Template Style: {template}
-
-Requirements:
-- 3-5 bullet points
-- Each point max 15 words
-- Focus on key insights and value propositions
-- Use active language and strong verbs
-- Consider audience's perspective and pain points
-
-Return format:
-{{
-  "points": [
-    "Bullet point 1",
-    "Bullet point 2",
-    "Bullet point 3"
-  ]
-}}"""
+        return CONTENT_USER
     
     def get_fallback_result(self, **kwargs) -> Dict[str, Any]:
         return {
@@ -50,34 +27,37 @@ Return format:
             ]
         }
     
-    async def enhance_slide_content(self, slide: SlideContent, context: Dict) -> SlideContent:
-        if slide.slideType == "title":
-            return slide
-        
-        result = await self.process(
-            slide_title=slide.title,
-            presentation_title=context["title"],
-            current_content=", ".join(slide.content),
-            audience=context["audience"],
-            template=context["template"]
-        )
-        
-        return SlideContent(
-            title=slide.title,
-            content=result.get("points", slide.content),
-            slideType=slide.slideType
-        )
-    
-    async def generate_all_content(self, outline: DeckOutline, request) -> List[SlideContent]:
+    async def generate_all_content(self, slides: List[SlideContent], request: DeckRequest, deck_title: str) -> List[SlideContent]:
         context = {
-            "title": outline.title,
+            "title": deck_title,
             "audience": request.audience,
             "template": request.template
         }
         
-        enhanced_slides = []
-        for slide in outline.slides:
-            enhanced = await self.enhance_slide_content(slide, context)
-            enhanced_slides.append(enhanced)
+        # Prepare batch inputs for non-title slides
+        indices_to_process = []
+        batch_inputs = []
         
-        return enhanced_slides
+        for i, slide in enumerate(slides):
+            if slide.slideType == "title":
+                continue
+            
+            indices_to_process.append(i)
+            batch_inputs.append({
+                "slide_title": slide.title,
+                "presentation_title": context["title"],
+                "current_content": ", ".join(slide.content) if slide.content else "",
+                "audience": context["audience"],
+                "template": context["template"]
+            })
+            
+        # Execute batch if there are items
+        if batch_inputs:
+            results = await self.process_batch(batch_inputs)
+            
+            # Map results back to slides
+            for idx, result in zip(indices_to_process, results):
+                if result and "points" in result:
+                    slides[idx].content = result["points"]
+                    
+        return slides

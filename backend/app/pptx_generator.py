@@ -24,8 +24,14 @@ class PPTXGenerator:
     """
 
     def __init__(self):
-        self.output_dir = os.getenv("OUTPUT_DIR", "backend/output")
-        self.templates_dir = os.getenv("TEMPLATES_DIR", "backend/templates")
+        # Resolve absolute paths relative to this file: backend/app/pptx_generator.py -> backend/
+        base_dir = Path(__file__).resolve().parent.parent
+        
+        default_output = str(base_dir / "output")
+        default_templates = str(base_dir / "templates")
+
+        self.output_dir = os.getenv("OUTPUT_DIR", default_output)
+        self.templates_dir = os.getenv("TEMPLATES_DIR", default_templates)
 
         # Ensure output directory exists
         os.makedirs(self.output_dir, exist_ok=True)
@@ -59,13 +65,14 @@ class PPTXGenerator:
         deck_id: str,
         slides: List[SlideContent],
         template: str,
-        title: str
+        title: str,
+        design_config: dict = None
     ) -> str:
         """
         Create a PowerPoint presentation from slide content.
-
-        Returns:
-            str: Path to the generated .pptx file
+        
+        Args:
+            design_config: Optional output from DesignAgent with specific colors/fonts
         """
         logger.info(f"Creating presentation with {len(slides)} slides")
 
@@ -74,14 +81,32 @@ class PPTXGenerator:
         prs.slide_width = Inches(10)
         prs.slide_height = Inches(7.5)
 
-        colors = self.color_schemes.get(template, self.color_schemes["corporate"])
+        # Determine colors: Use Agent config if available, fallback to template, then default
+        colors = self.color_schemes.get("corporate") # default
+        
+        if design_config and "fonts" in design_config:
+            # Could implement font selection here if OS supports it
+            pass
 
         # Add slides
         for i, slide_content in enumerate(slides):
-            if i == 0 or slide_content.slideType == "title":
-                self._add_title_slide(prs, slide_content, colors)
-            else:
-                self._add_content_slide(prs, slide_content, colors)
+            # Select layout logic
+            layout_idx = 1 # Default content
+            if slide_content.layout:
+                layout_idx = slide_content.layout.layout_idx
+            elif i == 0 or slide_content.slideType == "title":
+                layout_idx = 0
+            
+            # Create slide with dynamic layout
+            try:
+                layout = prs.slide_layouts[layout_idx]
+            except:
+                layout = prs.slide_layouts[1] # Safe fallback
+                
+            slide = prs.slides.add_slide(layout)
+            
+            # Apply content based on layout type
+            self._fill_slide_content(slide, slide_content, colors, layout_idx)
 
         # Save presentation
         file_path = os.path.join(self.output_dir, f"{deck_id}.pptx")
@@ -90,117 +115,66 @@ class PPTXGenerator:
         logger.info(f"Presentation saved: {file_path}")
         return file_path
 
-    def _add_title_slide(
-        self,
-        prs: Presentation,
-        content: SlideContent,
-        colors: dict
-    ):
-        """Add a title slide."""
-        slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank layout
+    def _fill_slide_content(self, slide, content: SlideContent, colors: dict, layout_idx: int):
+        """
+        Dynamically fill slide content based on the selected layout.
+        Uses standard python-pptx placeholders (0=Title, 1=Content/Subtitle...).
+        """
+        
+        # 1. Set Title (Almost all layouts have title at index 0)
+        if slide.shapes.title:
+            slide.shapes.title.text = content.title
+            # Style title
+            for paragraph in slide.shapes.title.text_frame.paragraphs:
+                paragraph.font.size = Pt(40) if layout_idx == 0 else Pt(32)
+                paragraph.font.color.rgb = colors["primary"]
+                paragraph.font.bold = True
+                
+        # 2. Main content filling logic
+        if layout_idx == 0: # Title Slide
+            # Usually has subtitle at placeholder 1
+            if len(slide.placeholders) > 1 and content.content:
+                subtitle = slide.placeholders[1]
+                subtitle.text = content.content[0]
+                # Style subtitle
+                for p in subtitle.text_frame.paragraphs:
+                    p.font.size = Pt(24)
+                    p.font.color.rgb = colors["secondary"]
+                    
+        elif layout_idx == 1: # Title + Content
+            if len(slide.placeholders) > 1:
+                body = slide.placeholders[1]
+                tf = body.text_frame
+                tf.clear() # Clear default prompt text
+                
+                for point in content.content:
+                    p = tf.add_paragraph()
+                    p.text = point
+                    p.font.size = Pt(20)
+                    p.font.color.rgb = colors["text_main"] if "text_main" in colors else colors["secondary"]
+                    p.space_before = Pt(12)
+                    
+        elif layout_idx == 3: # Two Content
+            # Left (1) and Right (2)
+            left_points = content.content[:len(content.content)//2]
+            right_points = content.content[len(content.content)//2:]
+            
+            if len(slide.placeholders) > 1:
+                self._populate_text_frame(slide.placeholders[1].text_frame, left_points, colors)
+            if len(slide.placeholders) > 2:
+                self._populate_text_frame(slide.placeholders[2].text_frame, right_points, colors)
+                
+        else: # Fallback for unknown layouts - try to find any body placeholder
+            if len(slide.placeholders) > 1:
+                self._populate_text_frame(slide.placeholders[1].text_frame, content.content, colors)
 
-        # Add title
-        left = Inches(1)
-        top = Inches(2.5)
-        width = Inches(8)
-        height = Inches(1.5)
 
-        title_box = slide.shapes.add_textbox(left, top, width, height)
-        title_frame = title_box.text_frame
-        title_frame.text = content.title
-
-        # Format title
-        title_para = title_frame.paragraphs[0]
-        title_para.font.size = Pt(54)
-        title_para.font.bold = True
-        title_para.font.color.rgb = colors["primary"]
-        title_para.alignment = PP_ALIGN.CENTER
-
-        # Add subtitle if available
-        if content.content:
-            subtitle_box = slide.shapes.add_textbox(
-                Inches(1), Inches(4.5), Inches(8), Inches(1)
-            )
-            subtitle_frame = subtitle_box.text_frame
-            subtitle_frame.text = content.content[0] if content.content else ""
-
-            subtitle_para = subtitle_frame.paragraphs[0]
-            subtitle_para.font.size = Pt(24)
-            subtitle_para.font.color.rgb = colors["secondary"]
-            subtitle_para.alignment = PP_ALIGN.CENTER
-
-    def _add_content_slide(
-        self,
-        prs: Presentation,
-        content: SlideContent,
-        colors: dict
-    ):
-        """Add a content slide with bullet points."""
-        slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank layout
-
-        # Add title
-        title_box = slide.shapes.add_textbox(
-            Inches(0.5), Inches(0.5), Inches(9), Inches(0.8)
-        )
-        title_frame = title_box.text_frame
-        title_frame.text = content.title
-
-        title_para = title_frame.paragraphs[0]
-        title_para.font.size = Pt(36)
-        title_para.font.bold = True
-        title_para.font.color.rgb = colors["primary"]
-
-        # Add content area
-        content_box = slide.shapes.add_textbox(
-            Inches(0.8), Inches(1.8), Inches(8.4), Inches(5)
-        )
-        text_frame = content_box.text_frame
-        text_frame.word_wrap = True
-
-        # Add bullet points
-        for i, point in enumerate(content.content):
-            if i == 0:
-                p = text_frame.paragraphs[0]
-            else:
-                p = text_frame.add_paragraph()
-
+    def _populate_text_frame(self, text_frame, points, colors):
+        text_frame.clear()
+        for point in points:
+            p = text_frame.add_paragraph()
             p.text = point
-            p.level = 0
-            p.font.size = Pt(20)
-            p.font.color.rgb = colors["secondary"]
-            p.space_before = Pt(12)
-            p.space_after = Pt(12)
+            p.font.size = Pt(18)
+            p.font.color.rgb = colors.get("secondary", RGBColor(0,0,0))
+            p.space_after = Pt(10)
 
-        # Add slide number
-        slide_num_box = slide.shapes.add_textbox(
-            Inches(9), Inches(7), Inches(0.5), Inches(0.3)
-        )
-        slide_num_frame = slide_num_box.text_frame
-        slide_num_frame.text = str(len(prs.slides))
-
-        slide_num_para = slide_num_frame.paragraphs[0]
-        slide_num_para.font.size = Pt(12)
-        slide_num_para.font.color.rgb = colors["secondary"]
-        slide_num_para.alignment = PP_ALIGN.RIGHT
-
-    def _add_comparison_slide(
-        self,
-        prs: Presentation,
-        content: SlideContent,
-        colors: dict
-    ):
-        """Add a comparison slide (two columns)."""
-        # TODO: Implement comparison layout
-        # For now, use content slide
-        self._add_content_slide(prs, content, colors)
-
-    def _add_data_slide(
-        self,
-        prs: Presentation,
-        content: SlideContent,
-        colors: dict
-    ):
-        """Add a data visualization slide."""
-        # TODO: Implement data visualization
-        # For now, use content slide
-        self._add_content_slide(prs, content, colors)

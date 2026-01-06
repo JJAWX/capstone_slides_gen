@@ -39,7 +39,7 @@ class DeckGenerator:
             logger.info(f"[{deck_id}] Starting deck generation via WorkflowManager")
 
             # Execute sophisticated workflow
-            slides = await self.workflow_manager.execute_workflow(deck_id, request, storage)
+            slides, design_config = await self.workflow_manager.execute_workflow(deck_id, request, storage)
 
             # Final RENDER Stage (not part of content logic, but file creation)
             await self._update_status(
@@ -50,7 +50,8 @@ class DeckGenerator:
                 deck_id=deck_id,
                 slides=slides,
                 template=request.template,
-                title=request.prompt # Or use title from outline if we tracked it separately
+                design_config=design_config,
+                title=request.prompt
             )
 
             # Stage: DONE

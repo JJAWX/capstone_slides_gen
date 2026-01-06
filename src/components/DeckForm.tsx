@@ -80,6 +80,10 @@ export default function DeckForm({ onSubmit, isLoading }: DeckFormProps) {
           <Select.Option value="academic">Academic</Select.Option>
           <Select.Option value="startup">Startup</Select.Option>
           <Select.Option value="minimal">Minimal</Select.Option>
+          <Select.Option value="creative">Creative</Select.Option>
+          <Select.Option value="nature">Nature / Organic</Select.Option>
+          <Select.Option value="futuristic">Futuristic / Cyber</Select.Option>
+          <Select.Option value="luxury">Luxury / Elegant</Select.Option>
         </Select>
       </Form.Item>
 

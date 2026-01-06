@@ -9,7 +9,15 @@ export type DeckStatus =
   | "error";
 
 export type Audience = "technical" | "business" | "academic" | "general";
-export type Template = "corporate" | "academic" | "startup" | "minimal";
+export type Template = 
+  | "corporate" 
+  | "academic" 
+  | "startup" 
+  | "minimal" 
+  | "creative" 
+  | "nature" 
+  | "futuristic" 
+  | "luxury";
 
 export interface DeckRequest {
   prompt: string;

@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, List
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 import logging
 import os
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -41,30 +42,43 @@ class BaseAgent(ABC):
         """Template for user prompt."""
         pass
     
-    async def process(self, **kwargs) -> Dict[str, Any]:
-        """Main processing method."""
-        try:
-            system_prompt = self.get_system_prompt()
-            # Pass template directly to LangChain to handle formatting
-            user_prompt_template = self.get_user_prompt_template()
-            
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", system_prompt),
-                ("human", user_prompt_template)
-            ])
-            
-            chain = prompt | self.llm | self.parser
-            result = await chain.ainvoke(kwargs)
-            
-            logger.info(f"{self.__class__.__name__} completed successfully")
-            return result
-            
-        except Exception as e:
-            logger.error(f"{self.__class__.__name__} failed: {str(e)}")
-            logger.exception(e)
-            return self.get_fallback_result(**kwargs)
-    
     @abstractmethod
     def get_fallback_result(self, **kwargs) -> Dict[str, Any]:
         """Fallback result if processing fails."""
         pass
+    
+    async def process(self, **kwargs) -> Dict[str, Any]:
+        """Main processing method - Single Item."""
+        try:
+            system_prompt = self.get_system_prompt()
+            user_prompt_template = self.get_user_prompt_template()
+            
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("user", user_prompt_template),
+            ])
+            
+            chain = prompt | self.llm | self.parser
+            response = await chain.ainvoke(kwargs)
+            logger.info(f"{self.__class__.__name__} processed successfully")
+            return response
+            
+        except Exception as e:
+            logger.error(f"Error in {self.__class__.__name__}: {str(e)}")
+            return self.get_fallback_result(**kwargs)
+
+    async def process_batch(self, items_kwargs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Process a batch of items concurrently."""
+        tasks = [self.process(**kwargs) for kwargs in items_kwargs]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        valid_results = []
+        for i, res in enumerate(results):
+            if isinstance(res, Exception):
+                logger.error(f"Batch item {i} failed with critical error: {res}")
+                # Since process() typically catches exceptions and returns fallback, 
+                # this branch is for critical failures (e.g. system errors).
+                raise res 
+            valid_results.append(res)
+            
+        return valid_results
