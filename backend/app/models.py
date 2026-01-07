@@ -7,7 +7,7 @@ Template = Literal[
     "corporate", "academic", "startup", "minimal",
     "creative", "nature", "futuristic", "luxury"
 ]
-DeckStatus = Literal["outline", "analyze", "content", "optimize", "layout", "design", "images", "adjust", "review", "done", "error"]
+DeckStatus = Literal["outline", "analyze", "content", "charts", "optimize", "layout", "design", "images", "adjust", "review", "done", "error"]
 
 
 class DeckRequest(BaseModel):
@@ -76,6 +76,8 @@ class SlideContent(BaseModel):
     image_description: Optional[str] = Field(None, description="Description of an image to include")
     image_url: Optional[str] = Field(None, description="URL of the image to embed")
     background_image_url: Optional[str] = Field(None, description="URL of the background image")
+    chart_url: Optional[str] = Field(None, description="Path to generated chart image")
+    chart_type: Optional[str] = Field(None, description="Type of chart: bar, line, pie, area, scatter")
     slideType: Literal["title", "content", "comparison", "data", "table", "image", "narrative"] = "content"
     layout: Optional[SlideLayoutResponse] = None # Added layout info
     notes: Optional[str] = None

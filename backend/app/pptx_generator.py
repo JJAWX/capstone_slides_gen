@@ -338,6 +338,8 @@ class PPTXGenerator:
         # A. TABLE SLIDE
         if content.slideType == "table" and content.table:
             self._add_table(slide, content.table, colors)
+            if content.chart_url:
+                self._add_chart_to_slide(slide, content.chart_url, content.chart_type or "chart")
             return
 
         # B. IMAGE SLIDE - dedicated image slides
@@ -361,9 +363,11 @@ class PPTXGenerator:
             # Add text if exists
             if content.content and len(slide.placeholders) > 1:
                  # Check if placeholder 1 is text
-                 try: 
-                    self._populate_text_frame(slide.placeholders[1].text_frame, content.content, colors) 
+                 try:
+                    self._populate_text_frame(slide.placeholders[1].text_frame, content.content, colors)
                  except: pass
+            if content.chart_url:
+                self._add_chart_to_slide(slide, content.chart_url, content.chart_type or "chart")
             return
 
         # C. NARRATIVE / PARAGRAPH
@@ -398,7 +402,9 @@ class PPTXGenerator:
                     txBox = slide.shapes.add_textbox(left, top, width, height)
                     self._populate_paragraph(txBox.text_frame, content.paragraph, colors)
                     txBox.text_frame.word_wrap = True
-            
+
+            if content.chart_url:
+                self._add_chart_to_slide(slide, content.chart_url, content.chart_type or "chart")
             return
 
         # D. STANDARD LISTS (Fallback)
@@ -470,10 +476,14 @@ class PPTXGenerator:
                 
         else: # Generic Fallback
             if len(slide.placeholders) > 1:
-                try: 
+                try:
                     self._populate_text_frame(slide.placeholders[1].text_frame, content.content, colors)
                 except AttributeError:
                     pass
+
+        # E. Add chart if available (last step, so it appears on top)
+        if content.chart_url:
+            self._add_chart_to_slide(slide, content.chart_url, content.chart_type or "chart")
 
     def _download_image(self, url: str) -> BytesIO:
         """Download image from URL and return as BytesIO object."""
@@ -667,7 +677,7 @@ class PPTXGenerator:
         top = Inches(2.5)
         width = Inches(7.0)
         height = Inches(4.0)
-        
+
         # Check if we can put it in a specific placeholder?
         # For now, custom shape
         shape = slide.shapes.add_shape(
@@ -677,13 +687,43 @@ class PPTXGenerator:
         fill = shape.fill
         fill.solid()
         fill.fore_color.rgb = colors.get("secondary", RGBColor(200,200,200)) # Light gray-ish
-        
+
         # Add text
         tf = shape.text_frame
         p = tf.paragraphs[0]
         p.text = f"[IMAGE PLACEHOLDER]\n{description}"
         p.alignment = PP_ALIGN.CENTER
         p.font.color.rgb = RGBColor(255,255,255)
+
+    def _add_chart_to_slide(self, slide, chart_url: str, chart_type: str):
+        """Add chart image to slide."""
+        logger.info(f"Attempting to add chart: {chart_url}")
+
+        if not chart_url:
+            logger.warning(f"Chart URL is empty")
+            return
+
+        if not os.path.exists(chart_url):
+            logger.warning(f"Chart file not found at: {chart_url}")
+            logger.warning(f"Current working directory: {os.getcwd()}")
+            return
+
+        try:
+            # Position chart on the right side or center depending on content
+            left = Inches(5.5)
+            top = Inches(2.0)
+            width = Inches(4.0)
+
+            logger.info(f"Reading chart file: {chart_url}")
+            with open(chart_url, 'rb') as f:
+                image_stream = BytesIO(f.read())
+
+            slide.shapes.add_picture(image_stream, left, top, width=width)
+            logger.info(f"Successfully added {chart_type} chart to slide at position ({left}, {top})")
+        except Exception as e:
+            logger.error(f"Failed to add chart: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
 
     def _populate_paragraph(self, text_frame, text, colors, force_small_font=False):
         """Render a single narrative paragraph."""

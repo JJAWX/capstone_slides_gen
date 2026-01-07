@@ -13,7 +13,15 @@ interface DeckStatusProps {
   onDownload?: () => void;
 }
 
-const statusSteps: DeckStatus[] = ["outline", "analyze", "content", "optimize", "layout", "review",  "done"];
+const statusSteps: DeckStatus[] = [
+  "outline",
+  "analyze",
+  "content",
+  "optimize",
+  "layout",
+  "review",
+  "done",
+];
 
 const statusLabels: Record<DeckStatus, string> = {
   outline: "OUTLINE",
@@ -24,6 +32,10 @@ const statusLabels: Record<DeckStatus, string> = {
   review: "REVIEW",
   done: "DONE",
   error: "ERROR",
+  design: "DESIGN",
+  images: "IMAGES",
+  adjust: "ADJUST",
+  charts: "CHARTS",
 };
 
 const statusDescriptions: Record<DeckStatus, string> = {
@@ -35,6 +47,10 @@ const statusDescriptions: Record<DeckStatus, string> = {
   review: "Final quality review",
   done: "Presentation ready",
   error: "Generation failed",
+  design: "Designing visual layout",
+  images: "Finding relevant images",
+  adjust: "Adjusting layout and text overflow",
+  charts: "Generating data visualization charts",
 };
 
 export default function DeckStatus({

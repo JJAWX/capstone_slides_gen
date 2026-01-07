@@ -1,14 +1,15 @@
-export type DeckStatus = 
-  | "outline" 
-  | "analyze" 
-  | "content" 
-  | "optimize" 
-  | "layout" 
+export type DeckStatus =
+  | "outline"
+  | "analyze"
+  | "content"
+  | "charts"
+  | "optimize"
+  | "layout"
   | "design"
   | "images"
   | "adjust"
-  | "review" 
-  | "done" 
+  | "review"
+  | "done"
   | "error";
 
 export type Audience = "technical" | "business" | "academic" | "general";

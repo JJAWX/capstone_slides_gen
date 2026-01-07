@@ -7,6 +7,7 @@ from ..agents.layout_agent import LayoutAgent
 from ..agents.image_agent import ImageAgent
 from ..agents.image_search_agent import ImageSearchAgent
 from ..agents.layout_adjustment_agent import LayoutAdjustmentAgent
+from ..agents.chart_agent import ChartAgent
 from ..models import DeckRequest, SlideContent
 import logging
 
@@ -15,19 +16,21 @@ logger = logging.getLogger(__name__)
 class WorkflowManager:
     """
     Manages the sophisticated PPT generation workflow.
-    
+
     Workflow Steps:
     1. 大纲 (Outline) - Strategic outline creation
     2. 权重布局 (Weighted Layout) - Structure analysis & slide allocation
     3. 内容生成 (Content Generation) - Parallel content development
-    4. 背景嵌入 (Background Embedding) - Image suggestions
-    5. 字体颜色调整 (Font Color Adjustment) - Auto contrast based on background
-    6. 图片搜索 (Image Search) - Find images for sparse slides
-    7. 布局调整 (Layout Adjustment) - Validate text overflow & image sizes
-    8. 最终检查 (Final Review) - Quality review and polish
-    9. 生成完毕 (Generation Complete)
+    4. 图表生成 (Chart Generation) - Generate data visualization charts
+    5. 内容优化 (Content Optimization) - Template-specific optimizations
+    6. 布局选择 (Layout Selection) - Assign optimal layouts
+    7. 背景嵌入 (Background Embedding) - Visual design & image suggestions
+    8. 图片搜索 (Image Search) - Find images for sparse slides
+    9. 布局调整 (Layout Adjustment) - Validate text overflow & image sizes
+    10. 最终检查 (Final Review) - Quality review and polish
+    11. 生成完毕 (Generation Complete)
     """
-    
+
     def __init__(self):
         self.outline_agent = OutlineAgent()
         self.content_agent = ContentAgent()
@@ -37,6 +40,7 @@ class WorkflowManager:
         self.image_agent = ImageAgent()
         self.image_search_agent = ImageSearchAgent()
         self.layout_adjustment_agent = LayoutAdjustmentAgent()
+        self.chart_agent = ChartAgent()
     
     async def execute_workflow(self, deck_id: str, request: DeckRequest, storage: Dict[str, Any]) -> tuple[List[SlideContent], Dict[str, Any]]:
         """
@@ -55,33 +59,49 @@ class WorkflowManager:
         # Step 3: 内容生成 - Concurrent Content Development
         await self._update_progress(storage, deck_id, "content", 30, f"✍️ Generating content for {len(slide_blueprints)} slides...")
         detailed_slides = await self.content_agent.generate_all_content(slide_blueprints, request, outline.title)
-        
-        # Step 4: Content Optimization
+
+        # Step 4: 图表生成 - Chart Generation for Data Visualization
+        await self._update_progress(storage, deck_id, "charts", 36, "📊 Generating charts for data visualization...")
+        slides_dict = [slide.dict() for slide in detailed_slides]
+        slides_with_charts = await self.chart_agent.suggest_charts_for_slides(
+            slides_dict,
+            request.template,
+            request.audience
+        )
+        # Update slides with chart data
+        for i, slide in enumerate(detailed_slides):
+            if i < len(slides_with_charts):
+                if "chart_url" in slides_with_charts[i]:
+                    slide.chart_url = slides_with_charts[i]["chart_url"]
+                if "chart_type" in slides_with_charts[i]:
+                    slide.chart_type = slides_with_charts[i]["chart_type"]
+
+        # Step 5: Content Optimization
         await self._update_progress(storage, deck_id, "optimize", 42, "🔧 Optimizing content for impact...")
         optimized_content = await self._optimize_content(detailed_slides, request)
-        
-        # Step 5: Layout Selection (Using Manual KB)
+
+        # Step 6: Layout Selection (Using Manual KB)
         await self._update_progress(storage, deck_id, "layout", 52, "📐 Selecting optimal layouts based on content analysis...")
         laid_out_content = await self.layout_agent.assign_layouts_all(optimized_content)
-        
-        # Step 6: 背景嵌入 - Visual Design & Background Images
+
+        # Step 7: 背景嵌入 - Visual Design & Background Images
         await self._update_progress(storage, deck_id, "design", 60, "🎨 Planning visual design and background images...")
         design_config = await self.design_agent.generate_design(request)
         laid_out_content = await self.image_agent.suggest_images(laid_out_content, outline.title, request.template)
-        
-        # Step 7: 图片搜索 - Find images for sparse slides (< 100 chars)
+
+        # Step 8: 图片搜索 - Find images for sparse slides (< 100 chars)
         await self._update_progress(storage, deck_id, "images", 70, "🔍 Finding relevant images for sparse slides...")
         laid_out_content = await self.image_search_agent.find_images_for_sparse_slides(
-            laid_out_content, 
+            laid_out_content,
             outline.title,
             max_text_length=100
         )
-        
-        # Step 8: 布局调整 - Validate & Adjust Layouts
+
+        # Step 9: 布局调整 - Validate & Adjust Layouts
         await self._update_progress(storage, deck_id, "adjust", 80, "📏 Validating layout and adjusting text overflow...")
         laid_out_content = self.layout_adjustment_agent.validate_and_adjust_all(laid_out_content)
-        
-        # Step 9: 最终检查 - Final Review & Assembly
+
+        # Step 10: 最终检查 - Final Review & Assembly
         await self._update_progress(storage, deck_id, "review", 90, "✅ Final quality review and assembly...")
         final_content = await self.review_agent.review_slides(laid_out_content, outline.title, request.audience)
         
@@ -241,6 +261,8 @@ class WorkflowManager:
             image_description=slide.image_description,
             image_url=slide.image_url,
             background_image_url=slide.background_image_url,
+            chart_url=slide.chart_url,
+            chart_type=slide.chart_type,
             notes=slide.notes,
             content_role=slide.content_role
         )

@@ -155,13 +155,21 @@ async def get_deck_status(deck_id: str):
 
     deck_data = decks_storage[deck_id]
 
-    return DeckStatusResponse(
-        deckId=deck_data["deckId"],
-        status=deck_data["status"],
-        progress=deck_data.get("progress"),
-        currentStep=deck_data.get("currentStep"),
-        error=deck_data.get("error")
-    )
+    try:
+        return DeckStatusResponse(
+            deckId=deck_data["deckId"],
+            status=deck_data["status"],
+            progress=deck_data.get("progress"),
+            currentStep=deck_data.get("currentStep"),
+            error=deck_data.get("error")
+        )
+    except Exception as e:
+        logger.error(f"Error creating DeckStatusResponse: {e}")
+        logger.error(f"Deck data: {deck_data}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Invalid deck data: {str(e)}"
+        )
 
 
 @app.get("/decks/{deck_id}/download")
