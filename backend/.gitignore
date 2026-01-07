@@ -45,3 +45,6 @@ templates/*.pptx
 # OS
 .DS_Store
 Thumbs.db
+
+# output
+.output/
