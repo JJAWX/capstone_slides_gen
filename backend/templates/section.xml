@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+             xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+             xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+             type="section" preserve="1">
+
+  <p:cSld name="Section Slide">
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="0" cy="0"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="0" cy="0"/>
+        </a:xfrm>
+      </p:grpSpPr>
+
+      <!-- Section Title Placeholder - Large and centered -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="2" name="Section Title"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="title"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="1828800" y="1828800"/>  <!-- x=2英寸, y=2英寸 -->
+            <a:ext cx="5486400" cy="1828800"/>  <!-- width=6英寸, height=2英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr anchor="ctr" rtlCol="0"/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="ctr"/>  <!-- 居中对齐 -->
+            <a:r>
+              <a:rPr lang="zh-CN" sz="5200" b="1"/>  <!-- 大字体，加粗 -->
+              <a:t>小节标题</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+      <!-- Section Subtitle Placeholder -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="3" name="Section Subtitle"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="body" idx="1"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="2286000" y="3657600"/>  <!-- x=2.5英寸, y=4英寸 -->
+            <a:ext cx="4572000" cy="914400"/>   <!-- width=5英寸, height=1英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr anchor="ctr" rtlCol="0"/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="ctr"/>  <!-- 居中对齐 -->
+            <a:r>
+              <a:rPr lang="zh-CN" sz="3200"/>  <!-- 中等字体 -->
+              <a:t>小节副标题</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+    </p:spTree>
+  </p:cSld>
+</p:sldLayout>

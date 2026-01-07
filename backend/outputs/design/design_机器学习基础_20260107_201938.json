@@ -1,0 +1,304 @@
+{
+  "title": "机器学习基础",
+  "total_slides": 22,
+  "sections": [
+    {
+      "section_number": 1,
+      "section_title": "第1章：引言",
+      "section_weight": 6,
+      "slides_count": 2,
+      "slides": [
+        {
+          "slide_number": 1,
+          "slide_title": "机器学习基础",
+          "template": "title.xml",
+          "content_type": "title_page",
+          "content_description": "PPT封面，展示主标题和副标题"
+        },
+        {
+          "slide_number": 2,
+          "slide_title": "引言",
+          "template": "content.xml",
+          "content_type": "text_content",
+          "content_description": "介绍机器学习的定义与重要性及其在日常生活中的应用示例",
+          "key_points": [
+            "机器学习的定义与重要性",
+            "演示文稿目的与结构",
+            "机器学习在日常生活中的应用示例"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 2,
+      "section_title": "第2章：机器学习的基本概念",
+      "section_weight": 8,
+      "slides_count": 3,
+      "slides": [
+        {
+          "slide_number": 3,
+          "slide_title": "第2章：基本概念",
+          "template": "section.xml",
+          "content_type": "section_intro",
+          "content_description": "介绍机器学习的基本概念章节"
+        },
+        {
+          "slide_number": 4,
+          "slide_title": "监督学习与无监督学习",
+          "template": "two_content.xml",
+          "content_type": "comparison_content",
+          "content_description": "对比监督学习与无监督学习",
+          "key_points": [
+            "监督学习的定义",
+            "无监督学习的定义"
+          ]
+        },
+        {
+          "slide_number": 5,
+          "slide_title": "特征与标签的定义",
+          "template": "content.xml",
+          "content_type": "text_content",
+          "content_description": "详细阐述特征和标签的定义及数据集的构建与划分",
+          "key_points": [
+            "特征的定义",
+            "标签的定义",
+            "数据集的构建与划分"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 3,
+      "section_title": "第3章：常见算法介绍",
+      "section_weight": 9,
+      "slides_count": 4,
+      "slides": [
+        {
+          "slide_number": 6,
+          "slide_title": "第3章：常见算法",
+          "template": "section.xml",
+          "content_type": "section_intro",
+          "content_description": "介绍常见算法章节"
+        },
+        {
+          "slide_number": 7,
+          "slide_title": "线性回归与分类",
+          "template": "two_content.xml",
+          "content_type": "comparison_content",
+          "content_description": "对比线性回归与分类算法",
+          "key_points": [
+            "线性回归的基本原理",
+            "分类算法的基本原理"
+          ]
+        },
+        {
+          "slide_number": 8,
+          "slide_title": "决策树与随机森林",
+          "template": "two_content.xml",
+          "content_type": "comparison_content",
+          "content_description": "对比决策树与随机森林",
+          "key_points": [
+            "决策树的特点",
+            "随机森林的特点"
+          ]
+        },
+        {
+          "slide_number": 9,
+          "slide_title": "支持向量机与神经网络",
+          "template": "two_content.xml",
+          "content_type": "comparison_content",
+          "content_description": "对比支持向量机与神经网络",
+          "key_points": [
+            "支持向量机的应用",
+            "神经网络的应用"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 4,
+      "section_title": "第4章：模型训练与评估",
+      "section_weight": 7,
+      "slides_count": 3,
+      "slides": [
+        {
+          "slide_number": 10,
+          "slide_title": "第4章：模型训练",
+          "template": "section.xml",
+          "content_type": "section_intro",
+          "content_description": "介绍模型训练与评估章节"
+        },
+        {
+          "slide_number": 11,
+          "slide_title": "模型训练的基本流程",
+          "template": "content.xml",
+          "content_type": "text_content",
+          "content_description": "介绍模型训练的基本流程及训练集与测试集的区别",
+          "key_points": [
+            "模型训练的基本流程",
+            "训练集与测试集的区别"
+          ]
+        },
+        {
+          "slide_number": 12,
+          "slide_title": "模型评估指标",
+          "template": "content.xml",
+          "content_type": "text_content",
+          "content_description": "详细介绍模型评估指标：精确度、召回率等",
+          "key_points": [
+            "精确度",
+            "召回率",
+            "其他评估指标"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 5,
+      "section_title": "第5章：数据预处理",
+      "section_weight": 6,
+      "slides_count": 2,
+      "slides": [
+        {
+          "slide_number": 13,
+          "slide_title": "第5章：数据预处理",
+          "template": "section.xml",
+          "content_type": "section_intro",
+          "content_description": "介绍数据预处理章节"
+        },
+        {
+          "slide_number": 14,
+          "slide_title": "数据清洗与特征缩放",
+          "template": "content.xml",
+          "content_type": "text_content",
+          "content_description": "介绍数据清洗与缺失值处理及特征缩放与编码",
+          "key_points": [
+            "数据清洗与缺失值处理",
+            "特征缩放与编码"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 6,
+      "section_title": "第6章：过拟合与欠拟合",
+      "section_weight": 5,
+      "slides_count": 2,
+      "slides": [
+        {
+          "slide_number": 15,
+          "slide_title": "第6章：过拟合与欠拟合",
+          "template": "section.xml",
+          "content_type": "section_intro",
+          "content_description": "介绍过拟合与欠拟合章节"
+        },
+        {
+          "slide_number": 16,
+          "slide_title": "过拟合与欠拟合的定义",
+          "template": "content.xml",
+          "content_type": "text_content",
+          "content_description": "介绍过拟合与欠拟合的定义与区别及正则化技术",
+          "key_points": [
+            "过拟合与欠拟合的定义",
+            "正则化技术",
+            "模型复杂度的控制"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 7,
+      "section_title": "第7章：实践案例分析",
+      "section_weight": 8,
+      "slides_count": 3,
+      "slides": [
+        {
+          "slide_number": 17,
+          "slide_title": "第7章：实践案例分析",
+          "template": "section.xml",
+          "content_type": "section_intro",
+          "content_description": "介绍实践案例分析章节"
+        },
+        {
+          "slide_number": 18,
+          "slide_title": "案例分析：图像分类",
+          "template": "picture_content.xml",
+          "content_type": "image_content",
+          "content_description": "通过图像分类案例分析机器学习应用",
+          "key_points": [
+            "图像分类案例介绍",
+            "关键步骤与结果讨论"
+          ]
+        },
+        {
+          "slide_number": 19,
+          "slide_title": "案例分析：文本分类",
+          "template": "picture_content.xml",
+          "content_type": "image_content",
+          "content_description": "通过文本分类案例分析机器学习应用",
+          "key_points": [
+            "文本分类案例介绍",
+            "关键步骤与结果讨论"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 8,
+      "section_title": "第8章：未来趋势与挑战",
+      "section_weight": 5,
+      "slides_count": 2,
+      "slides": [
+        {
+          "slide_number": 20,
+          "slide_title": "第8章：未来趋势与挑战",
+          "template": "section.xml",
+          "content_type": "section_intro",
+          "content_description": "介绍未来趋势与挑战章节"
+        },
+        {
+          "slide_number": 21,
+          "slide_title": "未来趋势与挑战",
+          "template": "content.xml",
+          "content_type": "text_content",
+          "content_description": "介绍机器学习领域的最新研究方向及道德与隐私问题",
+          "key_points": [
+            "最新研究方向",
+            "道德与隐私问题",
+            "学习资源推荐"
+          ]
+        }
+      ]
+    },
+    {
+      "section_number": 9,
+      "section_title": "第9章：结论与讨论",
+      "section_weight": 6,
+      "slides_count": 2,
+      "slides": [
+        {
+          "slide_number": 22,
+          "slide_title": "结论与讨论",
+          "template": "end.xml",
+          "content_type": "conclusion_page",
+          "content_description": "总结PPT内容并提供观众提问与交流机会",
+          "key_points": [
+            "关键点回顾",
+            "未来学习路径建议",
+            "观众提问与交流机会"
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "generated_at": "2026-01-07T20:19:38.933373",
+    "model": "gpt-4o",
+    "source_outline": {
+      "generated_at": "2026-01-07T18:48:51.857786",
+      "user_prompt": "创建一个关于机器学习的PPT演示文稿，面向学生观众",
+      "model": "gpt-4o"
+    },
+    "total_sections": 9
+  }
+}

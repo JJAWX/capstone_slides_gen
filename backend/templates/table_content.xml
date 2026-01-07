@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+             xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+             xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+             type="tableContent" preserve="1">
+
+  <p:cSld name="Table Content Slide">
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="0" cy="0"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="0" cy="0"/>
+        </a:xfrm>
+      </p:grpSpPr>
+
+      <!-- Title Placeholder -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="2" name="Title"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="title"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="914400" y="685800"/>  <!-- x=1英寸, y=0.75英寸 -->
+            <a:ext cx="7315200" cy="914400"/>  <!-- width=8英寸, height=1英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="lft"/>  <!-- 左对齐 -->
+            <a:r>
+              <a:rPr lang="zh-CN" sz="3600" b="1"/>  <!-- 较大字体，加粗 -->
+              <a:t>表文内容标题</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+      <!-- Table Placeholder (Left side) -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="3" name="Table"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="tbl" idx="1"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="914400" y="1600200"/>  <!-- x=1英寸, y=1.75英寸 -->
+            <a:ext cx="3657600" cy="2286000"/>  <!-- width=4英寸, height=2.5英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="ctr"/>
+            <a:r>
+              <a:rPr lang="zh-CN" sz="2400"/>
+              <a:t>表格占位符</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+      <!-- Content Placeholder (Right side, below table area) -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="4" name="Content"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="body" idx="1"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="4572000" y="1600200"/>  <!-- x=5英寸, y=1.75英寸 -->
+            <a:ext cx="3657600" cy="2286000"/>  <!-- width=4英寸, height=2.5英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="lft"/>  <!-- 左对齐 -->
+            <a:r>
+              <a:rPr lang="zh-CN" sz="2400"/>  <!-- 标准字体 -->
+              <a:t>右侧文字内容</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+    </p:spTree>
+  </p:cSld>
+</p:sldLayout>

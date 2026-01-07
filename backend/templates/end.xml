@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+             xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+             xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+             type="end" preserve="1">
+
+  <p:cSld name="End Slide">
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr>
+        <a:xfrm>
+          <a:off x="0" y="0"/>
+          <a:ext cx="0" cy="0"/>
+          <a:chOff x="0" y="0"/>
+          <a:chExt cx="0" cy="0"/>
+        </a:xfrm>
+      </p:grpSpPr>
+
+      <!-- Main Thank You Message -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="2" name="Thank You"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="title"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="1828800" y="1828800"/>  <!-- x=2英寸, y=2英寸 -->
+            <a:ext cx="5486400" cy="1371600"/>  <!-- width=6英寸, height=1.5英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr anchor="ctr" rtlCol="0"/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="ctr"/>  <!-- 居中对齐 -->
+            <a:r>
+              <a:rPr lang="zh-CN" sz="5200" b="1"/>  <!-- 大字体，加粗 -->
+              <a:t>感谢观看</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+      <!-- Subtitle/Additional Message -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="3" name="Subtitle"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="body" idx="1"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="2286000" y="3200400"/>  <!-- x=2.5英寸, y=3.5英寸 -->
+            <a:ext cx="4572000" cy="914400"/>   <!-- width=5英寸, height=1英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr anchor="ctr" rtlCol="0"/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="ctr"/>  <!-- 居中对齐 -->
+            <a:r>
+              <a:rPr lang="zh-CN" sz="3200"/>  <!-- 中等字体 -->
+              <a:t>感谢您的关注</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+      <!-- Contact/Additional Info -->
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="4" name="Contact"/>
+          <p:cNvSpPr>
+            <a:spLocks noGrp="1"/>
+          </p:cNvSpPr>
+          <p:nvPr>
+            <p:ph type="body" idx="2"/>
+          </p:nvPr>
+        </p:nvSpPr>
+        <p:spPr>
+          <a:xfrm>
+            <a:off x="2743200" y="4114800"/>  <!-- x=3英寸, y=4.5英寸 -->
+            <a:ext cx="3657600" cy="685800"/>   <!-- width=4英寸, height=0.75英寸 -->
+          </a:xfrm>
+          <a:prstGeom prst="rect">
+            <a:avLst/>
+          </a:prstGeom>
+        </p:spPr>
+        <p:txBody>
+          <a:bodyPr anchor="ctr" rtlCol="0"/>
+          <a:lstStyle/>
+          <a:p>
+            <a:pPr algn="ctr"/>  <!-- 居中对齐 -->
+            <a:r>
+              <a:rPr lang="zh-CN" sz="2400"/>  <!-- 标准字体 -->
+              <a:t>联系信息或其他内容</a:t>
+            </a:r>
+          </a:p>
+        </p:txBody>
+      </p:sp>
+
+    </p:spTree>
+  </p:cSld>
+</p:sldLayout>
