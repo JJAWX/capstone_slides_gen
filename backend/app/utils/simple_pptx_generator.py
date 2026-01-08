@@ -150,6 +150,23 @@ class SimplePPTXGenerator:
             return max(14, base_size - 2)
         return base_size
     
+    def _has_content(self, slide_data: Dict[str, Any]) -> bool:
+        """检查幻灯片是否有实际内容"""
+        content = slide_data.get("content", [])
+        paragraph = slide_data.get("paragraph", "")
+        table = slide_data.get("table", {})
+        image_url = slide_data.get("image_url", "")
+        
+        # 检查content是否有实质内容（排除占位符文本）
+        has_real_content = False
+        if content:
+            for item in content:
+                if item and len(item) > 20 and "Detailed explanation" not in item and "Aspect" not in item:
+                    has_real_content = True
+                    break
+        
+        return has_real_content or bool(paragraph) or bool(table.get("headers")) or bool(image_url)
+    
     def _create_slide(self, prs: Presentation, slide_data: Dict[str, Any], 
                       colors: Dict[str, RGBColor], slide_number: int, template: str):
         """创建单张幻灯片，根据layout_type选择布局"""
@@ -157,8 +174,22 @@ class SimplePPTXGenerator:
         slide_type = slide_data.get("slideType", "content")
         layout_type = slide_data.get("layout_type", "bullet_points")
         
+        # 检查是否有实际内容，如果没有则强制使用bullet布局并显示提示
+        if slide_type != "title" and not self._has_content(slide_data):
+            logger.warning(f"幻灯片 {slide_number} 内容为空，使用兜底内容")
+            # 使用标题生成兜底内容
+            title = slide_data.get("title", "")
+            slide_data["content"] = self._generate_fallback_content(title)
+            layout_type = "bullet_points"  # 强制使用bullet布局
+        
+        # 优先检查是否有图表 - 有图表的幻灯片优先使用图表布局
+        has_chart = slide_data.get("chart_url") and Path(slide_data.get("chart_url", "")).exists()
+        
         if slide_type == "title":
             self._create_title_slide(prs, slide_data, colors, template)
+        elif has_chart:
+            # 有图表时优先显示图表
+            self._create_chart_slide(prs, slide_data, colors)
         elif layout_type == "section_divider":
             self._create_section_slide(prs, slide_data, colors)
         elif layout_type == "two_column":
@@ -169,8 +200,6 @@ class SimplePPTXGenerator:
             self._create_quote_slide(prs, slide_data, colors)
         elif layout_type == "timeline":
             self._create_timeline_slide(prs, slide_data, colors)
-        elif layout_type == "chart_data" and slide_data.get("chart_url"):
-            self._create_chart_slide(prs, slide_data, colors)
         elif layout_type == "table_data" or slide_data.get("table"):
             self._create_table_slide(prs, slide_data, colors)
         elif layout_type == "image_content" or slide_data.get("image_url"):
@@ -179,6 +208,22 @@ class SimplePPTXGenerator:
             self._create_narrative_slide(prs, slide_data, colors)
         else:
             self._create_bullet_slide(prs, slide_data, colors)
+    
+    def _generate_fallback_content(self, title: str) -> List[str]:
+        """根据标题生成兜底内容"""
+        if not title:
+            return ["Content is being generated...", "Please check the generation logs for details."]
+        
+        # 从标题提取关键词生成相关内容
+        words = title.replace("-", " ").replace("_", " ").split()
+        main_topic = " ".join(words[:3]) if len(words) > 3 else title
+        
+        return [
+            f"Key aspects of {main_topic}",
+            f"Important considerations for this topic",
+            f"Main points to understand about {main_topic}",
+            f"Practical applications and examples"
+        ]
     
     def _create_title_slide(self, prs: Presentation, slide_data: Dict[str, Any],
                             colors: Dict[str, RGBColor], template: str):
@@ -270,26 +315,31 @@ class SimplePPTXGenerator:
                              colors: Dict[str, RGBColor]):
         """创建标准bullet points页"""
         slide = prs.slides.add_slide(prs.slide_layouts[6])
-        self._add_slide_title(slide, slide_data.get("title", ""), colors)
+        title = slide_data.get("title", "")
+        self._add_slide_title(slide, title, colors)
         
         content = slide_data.get("content", [])
-        if content:
-            font_size = self._get_font_size_for_content(content)
-            body_box = slide.shapes.add_textbox(Inches(0.8), Inches(1.3), Inches(8.4), Inches(3.8))
-            tf = body_box.text_frame
-            tf.word_wrap = True
-            
-            for i, point in enumerate(content[:MAX_BULLETS]):
-                if i == 0:
-                    p = tf.paragraphs[0]
-                else:
-                    p = tf.add_paragraph()
-                text = self._truncate_text(point, MAX_BULLET_CHARS)
-                p.text = "• " + text
-                p.font.size = Pt(font_size)
-                p.font.color.rgb = colors["text"]
-                p.space_before = Pt(8)
-                p.space_after = Pt(4)
+        
+        # 确保有内容显示
+        if not content or all(not c or len(c) < 5 for c in content):
+            content = self._generate_fallback_content(title)
+        
+        font_size = self._get_font_size_for_content(content)
+        body_box = slide.shapes.add_textbox(Inches(0.8), Inches(1.3), Inches(8.4), Inches(3.8))
+        tf = body_box.text_frame
+        tf.word_wrap = True
+        
+        for i, point in enumerate(content[:MAX_BULLETS]):
+            if i == 0:
+                p = tf.paragraphs[0]
+            else:
+                p = tf.add_paragraph()
+            text = self._truncate_text(point, MAX_BULLET_CHARS)
+            p.text = "• " + text
+            p.font.size = Pt(font_size)
+            p.font.color.rgb = colors["text"]
+            p.space_before = Pt(8)
+            p.space_after = Pt(4)
     
     def _create_two_column_slide(self, prs: Presentation, slide_data: Dict[str, Any],
                                   colors: Dict[str, RGBColor]):

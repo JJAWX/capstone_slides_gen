@@ -205,9 +205,11 @@ class WorkflowManager:
                     content_role="outline",
                     layout_type=layout1
                 ))
+                # Part 1 页面使用section的key_points作为上下文
+                detail_hints = section.key_points[:3] if section.key_points else ["Key details to explore"]
                 slide_blueprints.append(SlideContent(
-                    title=f"{section.title} - Details",
-                    content=[f"Detailed explanation of {section.title}"],
+                    title=f"{section.title} - Part 1",
+                    content=detail_hints,
                     slideType="content",
                     content_role="detail",
                     layout_type=layout2
@@ -232,9 +234,19 @@ class WorkflowManager:
                 
                 num_details = 2
                 for i in range(num_details):
+                    # 使用section的key_points作为详情页的上下文
+                    detail_content = []
+                    if i < len(section.key_points):
+                        detail_content = [section.key_points[i]]
+                        # 添加相邻的key_points作为补充上下文
+                        if i + 1 < len(section.key_points):
+                            detail_content.append(section.key_points[i + 1])
+                    else:
+                        detail_content = [f"Detailed exploration of {section.title}"]
+                    
                     slide_blueprints.append(SlideContent(
                         title=f"{section.title} - Part {i+1}",
-                        content=[f"Aspect {i+1}: {section.key_points[i] if i < len(section.key_points) else 'Additional details'}"],
+                        content=detail_content,
                         slideType="content",
                         content_role="detail",
                         layout_type=layouts[i + 1]
@@ -257,9 +269,18 @@ class WorkflowManager:
                     detail_layout = suggested_layouts[i + 1] if i + 1 < len(suggested_layouts) else layout_pool[layout_idx % len(layout_pool)]
                     layout_idx += 1
                     
+                    # 使用section的key_points作为详情页的上下文
+                    detail_content = []
+                    if i < len(section.key_points):
+                        detail_content = [section.key_points[i]]
+                        if i + 1 < len(section.key_points):
+                            detail_content.append(section.key_points[i + 1])
+                    else:
+                        detail_content = section.key_points[:2] if section.key_points else [f"Exploration of {section.title}"]
+                    
                     slide_blueprints.append(SlideContent(
                         title=f"{section.title} - Part {i+1}",
-                        content=[f"Aspect {i+1}: {section.key_points[i] if i < len(section.key_points) else 'Additional details'}"],
+                        content=detail_content,
                         slideType="content",
                         content_role="detail",
                         layout_type=detail_layout
@@ -268,7 +289,7 @@ class WorkflowManager:
                 # Add section summary (table)
                 slide_blueprints.append(SlideContent(
                     title=f"{section.title} - Summary",
-                    content=[f"Key takeaways from {section.title}"],
+                    content=section.key_points[:4] if section.key_points else ["Key takeaways"],
                     slideType="content",
                     content_role="summary",
                     layout_type="table_data"

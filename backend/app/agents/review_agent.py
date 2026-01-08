@@ -56,33 +56,43 @@ class ReviewAgent(BaseAgent):
                 # We need to construct the TableData object correctly if it exists
                 table_data = s_dict.get("table")
                 
+                # 获取LLM返回的content，如果为空则保留原始content
+                new_content = s_dict.get("content")
+                if not new_content or (isinstance(new_content, list) and len(new_content) == 0):
+                    new_content = original.content  # 保留原始content
+                
+                # 获取LLM返回的paragraph，如果为空则保留原始
+                new_paragraph = s_dict.get("paragraph")
+                if not new_paragraph:
+                    new_paragraph = original.paragraph
+                
                 new_slide = SlideContent(
                     title=s_dict.get("title", original.title),
                     slideType=s_dict.get("slideType", original.slideType),
-                    content=s_dict.get("content", []),
-                    paragraph=s_dict.get("paragraph"),
-                    image_description=s_dict.get("image_description"),
+                    content=new_content if new_content else [],
+                    paragraph=new_paragraph,
+                    image_description=s_dict.get("image_description") or original.image_description,
                     image_url=original.image_url,  # Preserve image URLs
                     background_image_url=original.background_image_url,  # Preserve background URLs
-                    table=table_data,
+                    table=table_data if table_data else original.table,
                     # CRITICAL: Preserve the layout assigned by LayoutAgent
                     layout=original.layout,
-                    notes=original.notes
+                    notes=original.notes,
+                    # CRITICAL: Preserve content_role and layout_type
+                    content_role=original.content_role,
+                    layout_type=original.layout_type,
+                    chart_url=original.chart_url,
+                    chart_type=original.chart_type
                 )
                 reviewed_slides.append(new_slide)
             return reviewed_slides
             
         elif len(raw_slides) > 0:
-            # Fallback for count mismatch - customized slides but layout data is lost
-            for s_dict in raw_slides:
-                reviewed_slides.append(SlideContent(
-                    title=s_dict.get("title", "Untitled"),
-                    slideType=s_dict.get("slideType", "content"),
-                    content=s_dict.get("content", []),
-                    paragraph=s_dict.get("paragraph"),
-                    image_description=s_dict.get("image_description"),
-                    table=s_dict.get("table")
-                ))
-            return reviewed_slides
+            # Fallback for count mismatch - 保守策略：直接返回原始slides
+            # 因为数量不匹配说明LLM可能出错了，不应该用它的结果
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"ReviewAgent: 幻灯片数量不匹配 (原始: {len(slides)}, 返回: {len(raw_slides)})，保留原始内容")
+            return slides
         else:
             return slides
