@@ -1,0 +1,344 @@
+{
+  "template_name": "Creative & Bold",
+  "template_id": "creative",
+  "description": "创意大胆风格，适合广告策划、品牌设计、创意提案",
+  
+  "colors": {
+    "primary": [255, 45, 85],
+    "secondary": [255, 204, 0],
+    "accent": [88, 86, 214],
+    "background": [255, 255, 255],
+    "dark_accent": [52, 52, 52],
+    "text_main": [33, 33, 33],
+    "text_light": [120, 120, 120],
+    "gradient_start": [255, 45, 85],
+    "gradient_end": [255, 204, 0]
+  },
+  
+  "fonts": {
+    "heading": "Impact",
+    "body": "Avenir",
+    "title_size": 60,
+    "heading_size": 40,
+    "body_size": 20,
+    "caption_size": 16
+  },
+  
+  "slide_layouts": [
+    {
+      "layout_id": "bold_title",
+      "name": "大胆标题页",
+      "description": "冲击力强的标题设计",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 1.0, "width": 9.0, "height": 2.0},
+          "style": {
+            "font_size": 72,
+            "bold": true,
+            "color": "primary",
+            "align": "left",
+            "transform": "uppercase",
+            "letter_spacing": -1
+          }
+        },
+        {
+          "type": "subtitle",
+          "position": {"left": 0.5, "top": 3.3, "width": 6.0, "height": 0.8},
+          "style": {"font_size": 24, "color": "dark_accent", "align": "left"}
+        },
+        {
+          "type": "accent_shape",
+          "position": {"left": 8.5, "top": 0.5, "width": 1.5, "height": 5.0},
+          "style": {"shape": "rectangle", "color": "secondary", "rotation": 15}
+        }
+      ]
+    },
+    {
+      "layout_id": "diagonal_split",
+      "name": "对角分割页",
+      "description": "对角线图文分割",
+      "elements": [
+        {
+          "type": "diagonal_background",
+          "position": {"left": 0.0, "top": 0.0, "width": 10.0, "height": 5.625},
+          "style": {"angle": 15, "color_top": "background", "color_bottom": "primary"}
+        },
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 4.0, "height": 0.8},
+          "style": {"font_size": 40, "bold": true, "color": "dark_accent"}
+        },
+        {
+          "type": "content",
+          "position": {"left": 0.8, "top": 1.5, "width": 4.0, "height": 2.5},
+          "style": {"font_size": 18, "color": "text_main", "line_spacing": 1.6}
+        },
+        {
+          "type": "image",
+          "position": {"left": 5.5, "top": 2.0, "width": 4.0, "height": 3.0},
+          "style": {"shadow": true, "rotation": -5}
+        }
+      ]
+    },
+    {
+      "layout_id": "magazine_layout",
+      "name": "杂志风格页",
+      "description": "不对称杂志布局",
+      "elements": [
+        {
+          "type": "large_number",
+          "position": {"left": 0.3, "top": 0.2, "width": 1.5, "height": 1.5},
+          "style": {"font_size": 120, "color": "secondary", "opacity": 0.7}
+        },
+        {
+          "type": "title",
+          "position": {"left": 2.0, "top": 0.5, "width": 7.5, "height": 0.8},
+          "style": {"font_size": 36, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "content_column_left",
+          "position": {"left": 0.5, "top": 1.8, "width": 4.5, "height": 3.3},
+          "style": {"font_size": 16, "color": "text_main", "columns": 1}
+        },
+        {
+          "type": "content_column_right",
+          "position": {"left": 5.2, "top": 1.8, "width": 4.3, "height": 3.3},
+          "style": {"font_size": 16, "color": "text_main", "columns": 1}
+        }
+      ]
+    },
+    {
+      "layout_id": "collage",
+      "name": "拼贴画页",
+      "description": "多图拼贴效果",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.7},
+          "style": {"font_size": 38, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "image_collage",
+          "position": {"left": 0.5, "top": 1.2, "width": 9.0, "height": 4.0},
+          "style": {
+            "layout": "random",
+            "image_count": 6,
+            "overlap": true,
+            "rotation_range": [-8, 8],
+            "shadow": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "bold_quote",
+      "name": "醒目引用页",
+      "description": "超大字体引用",
+      "elements": [
+        {
+          "type": "quote_text",
+          "position": {"left": 1.0, "top": 1.5, "width": 8.0, "height": 2.5},
+          "style": {
+            "font_size": 48,
+            "bold": true,
+            "color": "primary",
+            "align": "center",
+            "line_height": 1.3
+          }
+        },
+        {
+          "type": "quote_author",
+          "position": {"left": 2.0, "top": 4.2, "width": 6.0, "height": 0.5},
+          "style": {"font_size": 20, "color": "accent", "align": "center"}
+        },
+        {
+          "type": "decorative_line",
+          "position": {"left": 4.0, "top": 4.0, "width": 2.0, "height": 0.05},
+          "style": {"color": "secondary"}
+        }
+      ]
+    },
+    {
+      "layout_id": "infographic",
+      "name": "信息图表页",
+      "description": "图标化数据展示",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.4, "width": 9.0, "height": 0.7},
+          "style": {"font_size": 36, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "icon_grid",
+          "position": {"left": 0.8, "top": 1.3, "width": 8.4, "height": 4.0},
+          "style": {
+            "layout": "grid",
+            "columns": 3,
+            "icon_size": 80,
+            "icon_color": "accent",
+            "label_size": 16,
+            "value_size": 32,
+            "value_color": "primary"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "gradient_hero",
+      "name": "渐变英雄页",
+      "description": "渐变背景大标题",
+      "elements": [
+        {
+          "type": "gradient_background",
+          "position": {"left": 0.0, "top": 0.0, "width": 10.0, "height": 5.625},
+          "style": {
+            "gradient_type": "linear",
+            "angle": 135,
+            "color_start": "gradient_start",
+            "color_end": "gradient_end",
+            "opacity": 0.15
+          }
+        },
+        {
+          "type": "hero_title",
+          "position": {"left": 1.5, "top": 1.8, "width": 7.0, "height": 2.0},
+          "style": {
+            "font_size": 64,
+            "bold": true,
+            "color": "primary",
+            "align": "left"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "circular_flow",
+      "name": "环形流程页",
+      "description": "循环流程展示",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.4, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "circular_diagram",
+          "position": {"left": 1.5, "top": 1.2, "width": 7.0, "height": 4.0},
+          "style": {
+            "center_circle_size": 1.5,
+            "outer_circles": 4,
+            "arrow_style": "curved",
+            "color_scheme": ["primary", "secondary", "accent", "dark_accent"]
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "polaroid_style",
+      "name": "拍立得风格页",
+      "description": "照片墙效果",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 36, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "polaroid_grid",
+          "position": {"left": 0.8, "top": 1.1, "width": 8.4, "height": 4.2},
+          "style": {
+            "photos": 4,
+            "frame_color": [255, 255, 255],
+            "frame_border": 0.15,
+            "rotation_random": true,
+            "tape_decoration": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "neon_accent",
+      "name": "霓虹强调页",
+      "description": "霓虹灯效果重点",
+      "elements": [
+        {
+          "type": "dark_background",
+          "position": {"left": 0.0, "top": 0.0, "width": 10.0, "height": 5.625},
+          "style": {"color": "dark_accent"}
+        },
+        {
+          "type": "neon_title",
+          "position": {"left": 1.0, "top": 1.5, "width": 8.0, "height": 1.2},
+          "style": {
+            "font_size": 48,
+            "bold": true,
+            "color": "secondary",
+            "glow": true,
+            "glow_color": "secondary",
+            "align": "center"
+          }
+        },
+        {
+          "type": "content_light",
+          "position": {"left": 1.5, "top": 3.0, "width": 7.0, "height": 2.0},
+          "style": {"font_size": 18, "color": [255, 255, 255], "line_spacing": 1.8}
+        }
+      ]
+    },
+    {
+      "layout_id": "comic_strip",
+      "name": "漫画条页",
+      "description": "漫画分格效果",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 36, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "comic_panels",
+          "position": {"left": 0.5, "top": 1.1, "width": 9.0, "height": 4.2},
+          "style": {
+            "panel_count": 4,
+            "border_width": 3,
+            "border_color": "dark_accent",
+            "speech_bubbles": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "text_art",
+      "name": "文字艺术页",
+      "description": "创意文字排版",
+      "elements": [
+        {
+          "type": "artistic_text",
+          "position": {"left": 0.5, "top": 0.5, "width": 9.0, "height": 4.625},
+          "style": {
+            "font_size": 56,
+            "color": "primary",
+            "text_path": "wave",
+            "letter_spacing": 5,
+            "mixed_case": true,
+            "highlight_keywords": true,
+            "highlight_color": "secondary"
+          }
+        }
+      ]
+    }
+  ],
+  
+  "content_guidelines": {
+    "max_words_per_bullet": 10,
+    "max_bullets_per_slide": 5,
+    "paragraph_word_count": [80, 180],
+    "use_icons": true,
+    "use_emojis": true,
+    "bold_keywords": true,
+    "color_emphasis": true,
+    "visual_metaphors": true,
+    "creative_freedom": "high"
+  }
+}

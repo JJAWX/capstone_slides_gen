@@ -114,16 +114,17 @@ class ImageAgent(BaseAgent):
                     slides[idx].image_url = f"https://picsum.photos/seed/{seed}/1600/900"
                     logger.info(f"Added image URL for slide {idx}: {search_query} -> seed={seed}")
         
-        # Add background images to title slides and section dividers
+        # Add background images ONLY to the first title slide
         background_query = result.get("background_query", "")
         if background_query:
             for i, slide in enumerate(slides):
-                # Add subtle backgrounds to title and outline slides
-                if slide.slideType == "title" or (slide.content_role == "outline" and i > 0):
+                # ⚠️ 背景图片只能添加到主标题页 (slideType == "title" 且是第一张)
+                if slide.slideType == "title" and i == 0:
                     bg_seed = f"bg_{presentation_title[:10]}_{i}".replace(" ", "_")
                     bg_url = f"https://picsum.photos/seed/{bg_seed}/1920/1080"
                     slides[i].background_image_url = bg_url
-                    logger.info(f"Added background URL for slide {i}")
+                    logger.info(f"Added background URL for title slide {i}")
+                    break  # 只给第一张标题页添加背景
         
         return slides
     

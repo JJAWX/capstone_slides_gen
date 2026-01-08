@@ -1,0 +1,376 @@
+{
+  "template_name": "Dark Mode",
+  "template_id": "dark",
+  "description": "暗黑模式风格，适合科技产品、游戏、夜间演示",
+  
+  "colors": {
+    "primary": [138, 180, 248],
+    "secondary": [255, 121, 198],
+    "accent": [189, 147, 249],
+    "background": [30, 30, 46],
+    "surface": [49, 50, 68],
+    "text_main": [205, 214, 244],
+    "text_secondary": [166, 173, 200],
+    "highlight": [137, 220, 235],
+    "success": [166, 227, 161],
+    "warning": [249, 226, 175]
+  },
+  
+  "fonts": {
+    "heading": "Inter",
+    "body": "Roboto",
+    "title_size": 48,
+    "heading_size": 32,
+    "body_size": 18,
+    "caption_size": 14
+  },
+  
+  "slide_layouts": [
+    {
+      "layout_id": "dark_hero",
+      "name": "暗黑英雄页",
+      "description": "深色背景大标题",
+      "elements": [
+        {
+          "type": "gradient_overlay",
+          "position": {"left": 0.0, "top": 0.0, "width": 10.0, "height": 5.625},
+          "style": {
+            "gradient_type": "radial",
+            "color_start": "surface",
+            "color_end": "background",
+            "opacity": 1.0
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 2.0, "width": 8.4, "height": 1.5},
+          "style": {
+            "font_size": 56,
+            "bold": true,
+            "color": "primary",
+            "glow": true,
+            "align": "left"
+          }
+        },
+        {
+          "type": "accent_line",
+          "position": {"left": 0.8, "top": 3.6, "width": 3.0, "height": 0.06},
+          "style": {"color": "accent", "glow": true}
+        }
+      ]
+    },
+    {
+      "layout_id": "code_showcase",
+      "name": "代码展示页",
+      "description": "代码块或技术内容",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.7},
+          "style": {"font_size": 36, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "code_block",
+          "position": {"left": 0.8, "top": 1.4, "width": 8.4, "height": 3.8},
+          "style": {
+            "background": "surface",
+            "border_radius": 8,
+            "border_color": "primary",
+            "border_width": 1,
+            "padding": 0.3,
+            "font_family": "Fira Code",
+            "font_size": 14,
+            "syntax_highlighting": true,
+            "line_numbers": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "neon_content",
+      "name": "霓虹内容页",
+      "description": "发光效果的内容",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.7},
+          "style": {
+            "font_size": 36,
+            "bold": true,
+            "color": "secondary",
+            "glow": true,
+            "glow_intensity": 0.8
+          }
+        },
+        {
+          "type": "content_cards",
+          "position": {"left": 0.8, "top": 1.4, "width": 8.4, "height": 3.8},
+          "style": {
+            "card_background": "surface",
+            "card_border": "primary",
+            "border_glow": true,
+            "border_radius": 12,
+            "spacing": 0.2
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "terminal_style",
+      "name": "终端风格页",
+      "description": "命令行界面样式",
+      "elements": [
+        {
+          "type": "terminal_header",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.4},
+          "style": {
+            "background": "surface",
+            "border_radius_top": 8,
+            "traffic_lights": true
+          }
+        },
+        {
+          "type": "terminal_body",
+          "position": {"left": 0.8, "top": 0.9, "width": 8.4, "height": 4.3},
+          "style": {
+            "background": [12, 12, 18],
+            "border_radius_bottom": 8,
+            "font_family": "Source Code Pro",
+            "font_size": 16,
+            "text_color": "success",
+            "prompt_color": "primary",
+            "cursor": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "cyber_grid",
+      "name": "赛博网格页",
+      "description": "科技感网格背景",
+      "elements": [
+        {
+          "type": "grid_background",
+          "position": {"left": 0.0, "top": 0.0, "width": 10.0, "height": 5.625},
+          "style": {
+            "grid_type": "perspective",
+            "grid_color": "primary",
+            "grid_opacity": 0.15,
+            "fade_top": true
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.6, "width": 8.4, "height": 0.8},
+          "style": {
+            "font_size": 40,
+            "bold": true,
+            "color": "highlight",
+            "glow": true
+          }
+        },
+        {
+          "type": "content",
+          "position": {"left": 0.8, "top": 1.6, "width": 8.4, "height": 3.5},
+          "style": {
+            "background": "surface",
+            "background_opacity": 0.7,
+            "border_radius": 12,
+            "padding": 0.3,
+            "font_size": 16,
+            "color": "text_main"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "hologram",
+      "name": "全息投影页",
+      "description": "未来科技感",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.7},
+          "style": {
+            "font_size": 36,
+            "bold": true,
+            "color": "accent",
+            "scan_line_effect": true
+          }
+        },
+        {
+          "type": "hologram_content",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.0, "height": 3.8},
+          "style": {
+            "border_style": "hexagon",
+            "border_color": "primary",
+            "border_glow": true,
+            "corner_markers": true,
+            "scan_animation": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "data_visualization",
+      "name": "数据可视化页",
+      "description": "深色图表展示",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "dark_chart",
+          "position": {"left": 0.8, "top": 1.3, "width": 8.4, "height": 4.0},
+          "style": {
+            "background": "surface",
+            "grid_color": "text_secondary",
+            "grid_opacity": 0.1,
+            "color_scheme": ["primary", "secondary", "accent", "highlight"],
+            "glow_effects": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "gaming_style",
+      "name": "游戏风格页",
+      "description": "游戏界面样式",
+      "elements": [
+        {
+          "type": "hud_frame",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 5.0},
+          "style": {
+            "frame_style": "futuristic",
+            "corner_elements": true,
+            "corner_color": "warning",
+            "border_glow": true
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 1.0, "top": 0.8, "width": 8.0, "height": 0.7},
+          "style": {
+            "font_size": 36,
+            "bold": true,
+            "color": "warning",
+            "transform": "uppercase",
+            "tracking": 4
+          }
+        },
+        {
+          "type": "content",
+          "position": {"left": 1.0, "top": 1.7, "width": 8.0, "height": 3.3},
+          "style": {"font_size": 16, "color": "text_main"}
+        }
+      ]
+    },
+    {
+      "layout_id": "split_dark",
+      "name": "暗色分割页",
+      "description": "左右分割布局",
+      "elements": [
+        {
+          "type": "left_panel",
+          "position": {"left": 0.0, "top": 0.0, "width": 5.0, "height": 5.625},
+          "style": {"background": "surface", "border_right": "primary", "glow_right": true}
+        },
+        {
+          "type": "right_panel",
+          "position": {"left": 5.0, "top": 0.0, "width": 5.0, "height": 5.625},
+          "style": {"background": "background"}
+        },
+        {
+          "type": "left_content",
+          "position": {"left": 0.5, "top": 1.0, "width": 4.0, "height": 3.5},
+          "style": {"font_size": 18, "color": "text_main"}
+        },
+        {
+          "type": "right_content",
+          "position": {"left": 5.5, "top": 1.0, "width": 4.0, "height": 3.5},
+          "style": {"font_size": 18, "color": "text_main"}
+        }
+      ]
+    },
+    {
+      "layout_id": "particle_effect",
+      "name": "粒子效果页",
+      "description": "动态粒子背景",
+      "elements": [
+        {
+          "type": "particle_background",
+          "position": {"left": 0.0, "top": 0.0, "width": 10.0, "height": 5.625},
+          "style": {
+            "particle_color": "primary",
+            "particle_count": 50,
+            "connection_lines": true,
+            "opacity": 0.4
+          }
+        },
+        {
+          "type": "central_content",
+          "position": {"left": 2.0, "top": 1.5, "width": 6.0, "height": 2.625},
+          "style": {
+            "background": "surface",
+            "background_opacity": 0.9,
+            "border_radius": 16,
+            "border_color": "accent",
+            "border_glow": true,
+            "padding": 0.4
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "matrix_style",
+      "name": "矩阵风格页",
+      "description": "黑客/矩阵主题",
+      "elements": [
+        {
+          "type": "matrix_rain",
+          "position": {"left": 0.0, "top": 0.0, "width": 10.0, "height": 5.625},
+          "style": {
+            "character_color": "success",
+            "opacity": 0.2,
+            "speed": "slow"
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.0, "height": 0.8},
+          "style": {
+            "font_size": 40,
+            "bold": true,
+            "color": "success",
+            "glow": true,
+            "font_family": "monospace"
+          }
+        },
+        {
+          "type": "content",
+          "position": {"left": 1.5, "top": 2.5, "width": 7.0, "height": 2.5},
+          "style": {
+            "font_size": 16,
+            "color": "text_main",
+            "background": "background",
+            "background_opacity": 0.8,
+            "padding": 0.3
+          }
+        }
+      ]
+    }
+  ],
+  
+  "content_guidelines": {
+    "max_words_per_bullet": 12,
+    "max_bullets_per_slide": 6,
+    "paragraph_word_count": [100, 220],
+    "use_monospace": "optional",
+    "glow_effects": true,
+    "high_contrast": true,
+    "technical_terminology": true,
+    "emoji_style": "minimal"
+  }
+}

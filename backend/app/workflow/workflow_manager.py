@@ -148,6 +148,7 @@ class WorkflowManager:
         Expands high-level sections into individual slide blueprints based on weight.
         Structure: Title -> [Section Title -> Details... -> Section Summary]... -> Final Summary
         Flexibly adapts based on allocated slide count for each section.
+        Assigns diverse layout_types to ensure visual variety.
         """
         sections = outline.sections
         total_weight = sum(s.weight for s in sections)
@@ -157,11 +158,17 @@ class WorkflowManager:
         
         slide_blueprints = []
         
+        # Layout rotation pool for variety
+        layout_pool = ["bullet_points", "narrative", "two_column", "table_data", 
+                       "chart_data", "image_content", "comparison", "quote", "timeline"]
+        layout_idx = 0
+        
         # 1. Title Slide
         slide_blueprints.append(SlideContent(
             title=outline.title,
             content=[f"Presentation for {outline.title}"],
-            slideType="title"
+            slideType="title",
+            layout_type="title_slide"
         ))
         
         # 2. Distribute remaining slides to sections
@@ -170,67 +177,92 @@ class WorkflowManager:
             ratio = section.weight / total_weight
             num_slides = max(1, round(ratio * available_slides))
             
+            # Get suggested layouts from section if available
+            suggested_layouts = getattr(section, 'suggested_layouts', None) or []
+            
             # Adaptive Structure based on allocated slides:
             if num_slides == 1:
-                # Minimal: Just section outline (bullet points)
+                # Minimal: Just section outline (bullet points or quote)
+                layout_type = suggested_layouts[0] if suggested_layouts else "bullet_points"
                 slide_blueprints.append(SlideContent(
                     title=section.title,
                     content=section.key_points,
                     slideType="content",
-                    content_role="outline"
+                    content_role="outline",
+                    layout_type=layout_type
                 ))
                 
             elif num_slides == 2:
-                # Small section: Section Title + 1 Detail
+                # Small section: Section Title + 1 Detail with variety
+                layout1 = suggested_layouts[0] if len(suggested_layouts) > 0 else "bullet_points"
+                layout2 = suggested_layouts[1] if len(suggested_layouts) > 1 else layout_pool[layout_idx % len(layout_pool)]
+                layout_idx += 1
+                
                 slide_blueprints.append(SlideContent(
                     title=section.title,
                     content=section.key_points,
                     slideType="content",
-                    content_role="outline"
+                    content_role="outline",
+                    layout_type=layout1
                 ))
                 slide_blueprints.append(SlideContent(
                     title=f"{section.title} - Details",
                     content=[f"Detailed explanation of {section.title}"],
                     slideType="content",
-                    content_role="detail"
+                    content_role="detail",
+                    layout_type=layout2
                 ))
                 
             elif num_slides == 3:
-                # Medium section: Section Title + 2 Details (no summary yet)
+                # Medium section: Vary with outline + different detail layouts
+                layouts = suggested_layouts[:3] if len(suggested_layouts) >= 3 else [
+                    "bullet_points", 
+                    layout_pool[layout_idx % len(layout_pool)],
+                    layout_pool[(layout_idx + 1) % len(layout_pool)]
+                ]
+                layout_idx += 2
+                
                 slide_blueprints.append(SlideContent(
                     title=section.title,
                     content=section.key_points,
                     slideType="content",
-                    content_role="outline"
+                    content_role="outline",
+                    layout_type=layouts[0]
                 ))
-                # Split key points for multiple detail slides
+                
                 num_details = 2
                 for i in range(num_details):
                     slide_blueprints.append(SlideContent(
                         title=f"{section.title} - Part {i+1}",
                         content=[f"Aspect {i+1}: {section.key_points[i] if i < len(section.key_points) else 'Additional details'}"],
                         slideType="content",
-                        content_role="detail"
+                        content_role="detail",
+                        layout_type=layouts[i + 1]
                     ))
                     
             else:
-                # Large section (4+ slides): Section Title + Details + Section Summary
-                # Pattern: 1 outline + (n-2) details + 1 summary
+                # Large section (4+ slides): Maximum variety with outline + details + summary
                 slide_blueprints.append(SlideContent(
                     title=section.title,
                     content=section.key_points,
                     slideType="content",
-                    content_role="outline"
+                    content_role="outline",
+                    layout_type="section_divider"
                 ))
                 
-                # Add detail slides (num_slides - 2, at least 2)
+                # Add detail slides with rotating layouts
                 num_details = num_slides - 2
                 for i in range(num_details):
+                    # Cycle through different layout types
+                    detail_layout = suggested_layouts[i + 1] if i + 1 < len(suggested_layouts) else layout_pool[layout_idx % len(layout_pool)]
+                    layout_idx += 1
+                    
                     slide_blueprints.append(SlideContent(
                         title=f"{section.title} - Part {i+1}",
                         content=[f"Aspect {i+1}: {section.key_points[i] if i < len(section.key_points) else 'Additional details'}"],
                         slideType="content",
-                        content_role="detail"
+                        content_role="detail",
+                        layout_type=detail_layout
                     ))
                 
                 # Add section summary (table)
@@ -238,7 +270,8 @@ class WorkflowManager:
                     title=f"{section.title} - Summary",
                     content=[f"Key takeaways from {section.title}"],
                     slideType="content",
-                    content_role="summary"
+                    content_role="summary",
+                    layout_type="table_data"
                 ))
         
         # 3. Final Summary Slide (always included)
@@ -246,7 +279,8 @@ class WorkflowManager:
             title="Conclusion",
             content=["Overall summary and key takeaways from this presentation"],
             slideType="content",
-            content_role="summary"
+            content_role="summary",
+            layout_type="table_data"
         ))
                     
         return slide_blueprints

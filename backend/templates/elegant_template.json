@@ -1,0 +1,345 @@
+{
+  "template_name": "Elegant & Professional",
+  "template_id": "elegant",
+  "description": "优雅专业风格，适合高端品牌、奢侈品、专业服务",
+  
+  "colors": {
+    "primary": [25, 25, 112],
+    "secondary": [184, 134, 11],
+    "accent": [139, 0, 0],
+    "background": [255, 255, 255],
+    "cream": [250, 248, 240],
+    "text_main": [0, 0, 0],
+    "text_light": [96, 96, 96],
+    "border_gold": [212, 175, 55]
+  },
+  
+  "fonts": {
+    "heading": "Garamond",
+    "body": "Georgia",
+    "title_size": 52,
+    "heading_size": 36,
+    "body_size": 18,
+    "caption_size": 14
+  },
+  
+  "slide_layouts": [
+    {
+      "layout_id": "classic_title",
+      "name": "经典标题页",
+      "description": "优雅的标题设计",
+      "elements": [
+        {
+          "type": "decorative_border",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.0, "height": 2.625},
+          "style": {
+            "border_style": "classic",
+            "border_color": "border_gold",
+            "border_width": 2,
+            "corner_ornament": true
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 2.0, "top": 2.0, "width": 6.0, "height": 1.0},
+          "style": {
+            "font_size": 48,
+            "color": "primary",
+            "align": "center",
+            "italic": true,
+            "letter_spacing": 2
+          }
+        },
+        {
+          "type": "subtitle",
+          "position": {"left": 2.0, "top": 3.2, "width": 6.0, "height": 0.5},
+          "style": {"font_size": 18, "color": "secondary", "align": "center"}
+        }
+      ]
+    },
+    {
+      "layout_id": "serif_content",
+      "name": "衬线内容页",
+      "description": "优雅的文字排版",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 1.0, "top": 0.6, "width": 8.0, "height": 0.7},
+          "style": {
+            "font_size": 36,
+            "color": "primary",
+            "align": "center",
+            "small_caps": true
+          }
+        },
+        {
+          "type": "divider",
+          "position": {"left": 4.0, "top": 1.5, "width": 2.0, "height": 0.03},
+          "style": {"color": "border_gold"}
+        },
+        {
+          "type": "content",
+          "position": {"left": 1.5, "top": 2.0, "width": 7.0, "height": 3.0},
+          "style": {
+            "font_size": 18,
+            "color": "text_main",
+            "line_spacing": 1.8,
+            "align": "justify",
+            "first_letter_large": true
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "sidebar_layout",
+      "name": "侧边栏布局",
+      "description": "带装饰侧边栏",
+      "elements": [
+        {
+          "type": "sidebar",
+          "position": {"left": 0.0, "top": 0.0, "width": 1.5, "height": 5.625},
+          "style": {
+            "background": "cream",
+            "border_right": "border_gold",
+            "ornament_top": true
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 2.0, "top": 0.6, "width": 7.5, "height": 0.7},
+          "style": {"font_size": 36, "color": "primary", "italic": true}
+        },
+        {
+          "type": "content",
+          "position": {"left": 2.0, "top": 1.5, "width": 7.5, "height": 3.8},
+          "style": {"font_size": 16, "color": "text_main", "line_spacing": 1.7}
+        }
+      ]
+    },
+    {
+      "layout_id": "framed_image",
+      "name": "画框图片页",
+      "description": "带装饰画框的图片",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 1.0, "top": 0.5, "width": 8.0, "height": 0.6},
+          "style": {"font_size": 32, "color": "primary", "align": "center", "italic": true}
+        },
+        {
+          "type": "framed_image",
+          "position": {"left": 2.0, "top": 1.3, "width": 6.0, "height": 3.5},
+          "style": {
+            "frame_style": "ornate",
+            "frame_color": "border_gold",
+            "frame_width": 0.15,
+            "matting": true,
+            "matting_color": "cream"
+          }
+        },
+        {
+          "type": "caption",
+          "position": {"left": 2.0, "top": 5.0, "width": 6.0, "height": 0.4},
+          "style": {"font_size": 14, "color": "text_light", "italic": true, "align": "center"}
+        }
+      ]
+    },
+    {
+      "layout_id": "elegant_quote",
+      "name": "优雅引用页",
+      "description": "精致的引言设计",
+      "elements": [
+        {
+          "type": "ornamental_top",
+          "position": {"left": 4.5, "top": 1.0, "width": 1.0, "height": 0.3},
+          "style": {"ornament_type": "flourish", "color": "secondary"}
+        },
+        {
+          "type": "quote_text",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.0, "height": 2.0},
+          "style": {
+            "font_size": 32,
+            "color": "primary",
+            "italic": true,
+            "align": "center",
+            "line_height": 1.6
+          }
+        },
+        {
+          "type": "quote_author",
+          "position": {"left": 2.5, "top": 3.8, "width": 5.0, "height": 0.5},
+          "style": {
+            "font_size": 18,
+            "color": "secondary",
+            "align": "center",
+            "small_caps": true
+          }
+        },
+        {
+          "type": "ornamental_bottom",
+          "position": {"left": 4.5, "top": 4.5, "width": 1.0, "height": 0.3},
+          "style": {"ornament_type": "flourish", "color": "secondary"}
+        }
+      ]
+    },
+    {
+      "layout_id": "two_column_elegant",
+      "name": "优雅双栏页",
+      "description": "对称双栏布局",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 1.0, "top": 0.5, "width": 8.0, "height": 0.7},
+          "style": {"font_size": 36, "color": "primary", "align": "center", "italic": true}
+        },
+        {
+          "type": "column_left",
+          "position": {"left": 0.8, "top": 1.4, "width": 4.2, "height": 3.8},
+          "style": {
+            "font_size": 16,
+            "color": "text_main",
+            "line_spacing": 1.7,
+            "border_right": "border_gold",
+            "padding_right": 0.2
+          }
+        },
+        {
+          "type": "column_right",
+          "position": {"left": 5.0, "top": 1.4, "width": 4.2, "height": 3.8},
+          "style": {
+            "font_size": 16,
+            "color": "text_main",
+            "line_spacing": 1.7,
+            "padding_left": 0.2
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "medallion_points",
+      "name": "徽章要点页",
+      "description": "装饰性要点列表",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 1.0, "top": 0.5, "width": 8.0, "height": 0.7},
+          "style": {"font_size": 36, "color": "primary", "align": "center", "italic": true}
+        },
+        {
+          "type": "medallion_list",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.0, "height": 3.8},
+          "style": {
+            "medallion_style": "ornate",
+            "medallion_color": "secondary",
+            "font_size": 18,
+            "spacing": 0.5,
+            "indent": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "gallery",
+      "name": "画廊页",
+      "description": "艺术品展示风格",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 1.0, "top": 0.4, "width": 8.0, "height": 0.6},
+          "style": {"font_size": 32, "color": "primary", "align": "center", "italic": true}
+        },
+        {
+          "type": "gallery_grid",
+          "position": {"left": 1.0, "top": 1.2, "width": 8.0, "height": 4.0},
+          "style": {
+            "layout": "asymmetric",
+            "frame_style": "minimal",
+            "spacing": 0.2,
+            "background": "cream"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "certificate_style",
+      "name": "证书风格页",
+      "description": "正式认证样式",
+      "elements": [
+        {
+          "type": "border_frame",
+          "position": {"left": 0.5, "top": 0.5, "width": 9.0, "height": 4.625},
+          "style": {
+            "border_style": "double",
+            "border_color": "border_gold",
+            "border_width": 3,
+            "corner_embellishment": "ornate"
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.0, "height": 0.8},
+          "style": {
+            "font_size": 40,
+            "color": "primary",
+            "align": "center",
+            "small_caps": true,
+            "letter_spacing": 3
+          }
+        },
+        {
+          "type": "content",
+          "position": {"left": 2.0, "top": 2.5, "width": 6.0, "height": 2.0},
+          "style": {
+            "font_size": 16,
+            "color": "text_main",
+            "align": "center",
+            "line_spacing": 1.8
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "monogram",
+      "name": "字母组合页",
+      "description": "带字母组合装饰",
+      "elements": [
+        {
+          "type": "monogram",
+          "position": {"left": 0.5, "top": 0.3, "width": 0.8, "height": 0.8},
+          "style": {
+            "font_size": 48,
+            "color": "secondary",
+            "style": "ornamental",
+            "opacity": 0.3
+          }
+        },
+        {
+          "type": "title",
+          "position": {"left": 1.5, "top": 0.6, "width": 7.5, "height": 0.7},
+          "style": {"font_size": 36, "color": "primary", "italic": true}
+        },
+        {
+          "type": "content",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.5, "height": 3.5},
+          "style": {
+            "font_size": 18,
+            "color": "text_main",
+            "line_spacing": 1.7,
+            "align": "justify"
+          }
+        }
+      ]
+    }
+  ],
+  
+  "content_guidelines": {
+    "max_words_per_bullet": 15,
+    "max_bullets_per_slide": 5,
+    "paragraph_word_count": [200, 400],
+    "use_serif_fonts": true,
+    "emphasis_style": "italic",
+    "spacing": "generous",
+    "formal_language": true,
+    "ornamental_elements": true
+  }
+}

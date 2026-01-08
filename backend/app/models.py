@@ -78,6 +78,7 @@ class SlideContent(BaseModel):
     background_image_url: Optional[str] = Field(None, description="URL of the background image")
     chart_url: Optional[str] = Field(None, description="Path to generated chart image")
     chart_type: Optional[str] = Field(None, description="Type of chart: bar, line, pie, area, scatter")
+    layout_type: Optional[str] = Field(None, description="Template layout type: bullet_points, narrative, table_data, two_column, comparison, image_content, chart_data, quote, timeline, etc.")
     slideType: Literal["title", "content", "comparison", "data", "table", "image", "narrative"] = "content"
     layout: Optional[SlideLayoutResponse] = None # Added layout info
     notes: Optional[str] = None
@@ -92,6 +93,7 @@ class OutlineSection(BaseModel):
     description: str
     weight: int = Field(..., ge=1, le=10, description="Importance/Complexity weight 1-10")
     key_points: list[str]
+    suggested_layouts: Optional[list[str]] = Field(default_factory=list, description="Suggested layout types for slides in this section")
 
 
 class DeckOutline(BaseModel):

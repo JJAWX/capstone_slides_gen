@@ -1,0 +1,315 @@
+{
+  "template_name": "Modern Business",
+  "template_id": "modern",
+  "description": "现代商务风格，适合科技公司、互联网企业、现代化业务",
+  
+  "colors": {
+    "primary": [0, 122, 255],
+    "secondary": [52, 199, 89],
+    "accent": [255, 149, 0],
+    "background": [255, 255, 255],
+    "surface": [246, 248, 250],
+    "text_main": [28, 28, 30],
+    "text_secondary": [142, 142, 147],
+    "border": [229, 229, 234]
+  },
+  
+  "fonts": {
+    "heading": "SF Pro Display",
+    "body": "SF Pro Text",
+    "title_size": 48,
+    "heading_size": 32,
+    "body_size": 18,
+    "caption_size": 14
+  },
+  
+  "slide_layouts": [
+    {
+      "layout_id": "hero_title",
+      "name": "英雄标题页",
+      "description": "现代化大标题设计",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 1.8, "width": 8.4, "height": 1.5},
+          "style": {
+            "font_size": 52,
+            "bold": true,
+            "color": "primary",
+            "align": "left",
+            "line_height": 1.2
+          }
+        },
+        {
+          "type": "subtitle",
+          "position": {"left": 0.8, "top": 3.5, "width": 6.0, "height": 0.8},
+          "style": {"font_size": 20, "color": "text_secondary", "align": "left"}
+        },
+        {
+          "type": "brand_element",
+          "position": {"left": 8.5, "top": 0.5, "width": 1.0, "height": 1.0},
+          "style": {"shape": "rounded_square", "color": "accent", "radius": 10}
+        }
+      ]
+    },
+    {
+      "layout_id": "card_layout",
+      "name": "卡片布局页",
+      "description": "现代卡片式内容",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.7},
+          "style": {"font_size": 36, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "card_grid",
+          "position": {"left": 0.8, "top": 1.4, "width": 8.4, "height": 3.8},
+          "style": {
+            "columns": 3,
+            "card_background": "surface",
+            "card_radius": 12,
+            "card_shadow": "subtle",
+            "padding": 0.2,
+            "gap": 0.2
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "feature_showcase",
+      "name": "功能展示页",
+      "description": "产品功能介绍",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.7},
+          "style": {"font_size": 36, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "feature_image",
+          "position": {"left": 5.2, "top": 1.4, "width": 4.3, "height": 3.8},
+          "style": {
+            "border_radius": 12,
+            "shadow": "medium",
+            "mockup_style": "device"
+          }
+        },
+        {
+          "type": "feature_list",
+          "position": {"left": 0.8, "top": 1.4, "width": 4.0, "height": 3.8},
+          "style": {
+            "icon_style": "system",
+            "icon_color": "primary",
+            "font_size": 16,
+            "spacing": 0.4
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "metrics_dashboard",
+      "name": "指标仪表板",
+      "description": "关键指标展示",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "metric_cards",
+          "position": {"left": 0.8, "top": 1.3, "width": 8.4, "height": 1.5},
+          "style": {
+            "layout": "horizontal",
+            "card_count": 3,
+            "value_size": 36,
+            "label_size": 14,
+            "trend_indicator": true,
+            "background": "surface",
+            "radius": 10
+          }
+        },
+        {
+          "type": "chart",
+          "position": {"left": 0.8, "top": 3.0, "width": 8.4, "height": 2.3},
+          "style": {
+            "chart_type": "area",
+            "fill_opacity": 0.3,
+            "line_width": 2,
+            "color": "primary"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "comparison_modern",
+      "name": "现代对比页",
+      "description": "并排功能对比",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "comparison_table",
+          "position": {"left": 0.8, "top": 1.3, "width": 8.4, "height": 4.0},
+          "style": {
+            "header_background": "primary",
+            "header_text_color": [255, 255, 255],
+            "row_hover": true,
+            "checkmark_color": "secondary",
+            "cross_color": [255, 59, 48],
+            "border_style": "modern"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "process_flow",
+      "name": "流程图页",
+      "description": "业务流程展示",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "flow_diagram",
+          "position": {"left": 0.8, "top": 1.3, "width": 8.4, "height": 4.0},
+          "style": {
+            "node_shape": "rounded_rectangle",
+            "node_background": "surface",
+            "node_border": "primary",
+            "arrow_style": "modern",
+            "arrow_color": "text_secondary",
+            "layout": "horizontal"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "testimonial",
+      "name": "客户评价页",
+      "description": "用户反馈展示",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "quote_card",
+          "position": {"left": 1.5, "top": 1.5, "width": 7.0, "height": 2.5},
+          "style": {
+            "background": "surface",
+            "border_radius": 16,
+            "padding": 0.4,
+            "quote_size": 18,
+            "quote_color": "text_main"
+          }
+        },
+        {
+          "type": "author_info",
+          "position": {"left": 1.5, "top": 4.2, "width": 7.0, "height": 0.8},
+          "style": {
+            "avatar_size": 50,
+            "avatar_border": "primary",
+            "name_size": 16,
+            "title_size": 14,
+            "layout": "horizontal"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "app_showcase",
+      "name": "应用展示页",
+      "description": "移动应用或软件界面",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 4.0, "height": 0.7},
+          "style": {"font_size": 36, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "description",
+          "position": {"left": 0.8, "top": 1.4, "width": 4.0, "height": 1.5},
+          "style": {"font_size": 16, "color": "text_secondary", "line_spacing": 1.6}
+        },
+        {
+          "type": "device_mockup",
+          "position": {"left": 5.5, "top": 0.8, "width": 3.5, "height": 4.0},
+          "style": {
+            "device_type": "phone",
+            "device_color": "black",
+            "screen_radius": 20,
+            "shadow": "large"
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "icon_features",
+      "name": "图标功能页",
+      "description": "带图标的功能列表",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.5, "width": 8.4, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "text_main"}
+        },
+        {
+          "type": "icon_grid",
+          "position": {"left": 0.8, "top": 1.3, "width": 8.4, "height": 4.0},
+          "style": {
+            "columns": 2,
+            "icon_size": 60,
+            "icon_background": "surface",
+            "icon_radius": 12,
+            "text_size": 16,
+            "spacing": 0.3
+          }
+        }
+      ]
+    },
+    {
+      "layout_id": "pricing_modern",
+      "name": "定价方案页",
+      "description": "现代定价表",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.8, "top": 0.4, "width": 8.4, "height": 0.6},
+          "style": {"font_size": 32, "bold": true, "color": "text_main", "align": "center"}
+        },
+        {
+          "type": "pricing_cards",
+          "position": {"left": 0.8, "top": 1.2, "width": 8.4, "height": 4.0},
+          "style": {
+            "card_count": 3,
+            "highlight_middle": true,
+            "highlight_color": "primary",
+            "radius": 16,
+            "shadow": "medium",
+            "button_style": "rounded"
+          }
+        }
+      ]
+    }
+  ],
+  
+  "content_guidelines": {
+    "max_words_per_bullet": 12,
+    "max_bullets_per_slide": 6,
+    "paragraph_word_count": [120, 250],
+    "use_icons": true,
+    "icon_style": "outline",
+    "spacing": "generous",
+    "border_radius": 12,
+    "shadow_depth": "subtle",
+    "animation_ready": true
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "template_name": "Academic Research",
+  "template_id": "academic",
+  "description": "学术研究风格，适合论文展示、学术报告、研究成果",
+  
+  "colors": {
+    "primary": [51, 51, 51],
+    "secondary": [102, 102, 102],
+    "accent": [0, 102, 204],
+    "background": [255, 255, 255],
+    "text_main": [0, 0, 0],
+    "text_light": [100, 100, 100]
+  },
+  
+  "fonts": {
+    "heading": "Times New Roman",
+    "body": "Arial",
+    "title_size": 40,
+    "heading_size": 28,
+    "body_size": 16,
+    "caption_size": 12
+  },
+  
+  "slide_layouts": [
+    {
+      "layout_id": "title_slide",
+      "name": "标题页",
+      "description": "学术风格标题页，包含作者和机构",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 1.0, "top": 1.5, "width": 8.0, "height": 1.2},
+          "style": {"font_size": 40, "bold": true, "color": "primary", "align": "center"}
+        },
+        {
+          "type": "authors",
+          "position": {"left": 1.0, "top": 3.0, "width": 8.0, "height": 0.5},
+          "style": {"font_size": 18, "color": "text_main", "align": "center"}
+        },
+        {
+          "type": "institution",
+          "position": {"left": 1.0, "top": 3.7, "width": 8.0, "height": 0.4},
+          "style": {"font_size": 16, "color": "text_light", "align": "center"}
+        },
+        {
+          "type": "date",
+          "position": {"left": 1.0, "top": 4.3, "width": 8.0, "height": 0.3},
+          "style": {"font_size": 14, "color": "text_light", "align": "center"}
+        }
+      ]
+    },
+    {
+      "layout_id": "abstract",
+      "name": "摘要页",
+      "description": "研究摘要或论文概述",
+      "elements": [
+        {
+          "type": "section_label",
+          "position": {"left": 0.5, "top": 0.4, "width": 2.0, "height": 0.5},
+          "style": {"font_size": 24, "bold": true, "color": "accent"}
+        },
+        {
+          "type": "abstract_text",
+          "position": {"left": 0.5, "top": 1.2, "width": 9.0, "height": 3.8},
+          "style": {"font_size": 16, "color": "text_main", "line_spacing": 1.8, "align": "justify"}
+        }
+      ]
+    },
+    {
+      "layout_id": "methodology",
+      "name": "方法论页",
+      "description": "研究方法展示，通常包含流程图",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 28, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "process_diagram",
+          "position": {"left": 1.0, "top": 1.2, "width": 8.0, "height": 2.5},
+          "style": {"border": true, "arrow_color": "accent"}
+        },
+        {
+          "type": "description",
+          "position": {"left": 0.8, "top": 4.0, "width": 8.4, "height": 1.2},
+          "style": {"font_size": 14, "color": "text_main", "line_spacing": 1.5}
+        }
+      ]
+    },
+    {
+      "layout_id": "results_chart",
+      "name": "实验结果页（图表）",
+      "description": "数据可视化展示",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 26, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "chart",
+          "position": {"left": 0.8, "top": 1.1, "width": 8.4, "height": 3.5},
+          "style": {"grid": true, "axis_labels": true}
+        },
+        {
+          "type": "figure_caption",
+          "position": {"left": 0.5, "top": 4.8, "width": 9.0, "height": 0.5},
+          "style": {"font_size": 12, "color": "text_light", "italic": true, "align": "center"}
+        }
+      ]
+    },
+    {
+      "layout_id": "results_table",
+      "name": "实验结果页（表格）",
+      "description": "详细数据表格",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 26, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "table",
+          "position": {"left": 0.8, "top": 1.1, "width": 8.4, "height": 3.5},
+          "style": {
+            "header_color": "secondary",
+            "header_text_color": [255, 255, 255],
+            "alternate_rows": true,
+            "border_style": "thin"
+          }
+        },
+        {
+          "type": "table_caption",
+          "position": {"left": 0.5, "top": 4.8, "width": 9.0, "height": 0.5},
+          "style": {"font_size": 12, "color": "text_light", "italic": true, "align": "center"}
+        }
+      ]
+    },
+    {
+      "layout_id": "comparison",
+      "name": "对比分析页",
+      "description": "并排对比两个方案或结果",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 26, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "comparison_left",
+          "position": {"left": 0.5, "top": 1.2, "width": 4.25, "height": 3.8},
+          "style": {"border": true, "background": [245, 245, 245]}
+        },
+        {
+          "type": "comparison_right",
+          "position": {"left": 5.25, "top": 1.2, "width": 4.25, "height": 3.8},
+          "style": {"border": true, "background": [245, 245, 245]}
+        }
+      ]
+    },
+    {
+      "layout_id": "references",
+      "name": "参考文献页",
+      "description": "文献引用列表",
+      "elements": [
+        {
+          "type": "title",
+          "position": {"left": 0.5, "top": 0.3, "width": 9.0, "height": 0.6},
+          "style": {"font_size": 28, "bold": true, "color": "primary"}
+        },
+        {
+          "type": "reference_list",
+          "position": {"left": 0.8, "top": 1.1, "width": 8.4, "height": 4.2},
+          "style": {
+            "font_size": 12,
+            "color": "text_main",
+            "line_spacing": 1.3,
+            "hanging_indent": 0.5,
+            "citation_style": "APA"
+          }
+        }
+      ]
+    }
+  ],
+  
+  "content_guidelines": {
+    "max_words_per_bullet": 18,
+    "max_bullets_per_slide": 7,
+    "paragraph_word_count": [250, 500],
+    "table_max_rows": 8,
+    "title_max_length": 80,
+    "citations_required": true,
+    "figure_numbering": true
+  }
+}

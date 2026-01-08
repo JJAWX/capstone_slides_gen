@@ -16,21 +16,40 @@ Topic: {prompt}
 Audience: {audience}
 Template: {template}
 
+⚠️ CRITICAL: Create a DETAILED outline with SPECIFIC content, not generic placeholders!
+
+**Available Layout Types for Variety:**
+- bullet_points: Standard bullet list (use sparingly)
+- narrative: Full paragraph text (for explanations)
+- two_column: Split content into two columns (for pros/cons, before/after)
+- comparison: Side-by-side comparison
+- table_data: Structured data table
+- chart_data: Data visualization
+- image_content: Image with description
+- quote: Highlighted quotation
+- timeline: Sequential events
+
 Requirements:
-- Structure the presentation into logical SECTIONS (e.g., Introduction, Market Analysis, Financials).
+- Structure the presentation into 3-6 logical SECTIONS (e.g., Introduction, Market Analysis, Financials).
 - Do NOT determine the exact number of slides yet; just identify the key topics.
-- For each section, provide a weight (1-10) indicating how much detail it needs.
-- Include key points that should be covered in that section.
+- For each section, provide a weight (1-10) indicating how much detail it needs:
+  * 1-3: Brief mention (1-2 slides)
+  * 4-6: Moderate detail (3-5 slides)
+  * 7-10: Deep dive (6+ slides)
+- Include 4-6 SPECIFIC key points per section (not generic like "Point A")
+- Make key points actionable and relevant to the topic
+- **VARY LAYOUT TYPES**: Assign suggested_layouts for each section to ensure visual diversity
 
 Return format:
 {{
-  "title": "Main Presentation Title",
+  "title": "Main Presentation Title (specific to topic)",
   "sections": [
     {{
       "title": "Section Title",
-      "description": "Brief description of what this section covers",
+      "description": "Brief description of what this section covers (2-3 sentences)",
       "weight": 8,
-      "key_points": ["Point A", "Point B", "Point C"]
+      "key_points": ["Specific Point 1...", "Specific Point 2...", "Specific Point 3...", "Specific Point 4...", "Specific Point 5..."],
+      "suggested_layouts": ["narrative", "bullet_points", "chart_data", "two_column"]
     }}
   ]
 }}"""
@@ -58,23 +77,53 @@ Current Outline Hint: {current_content}
 Audience: {audience}
 Template Style: {template}
 **Content Role: {content_role}**
+**Target Layout Type: {layout_type}**
 
-Requirements (FOLLOW STRICTLY):
-- IF content_role="outline": Generate 3-5 concise bullet points. NO paragraph, NO table.
-- IF content_role="detail": Generate a detailed paragraph (150-300 words). Provide bullet points as summary only.
-- IF content_role="summary": Generate a table with headers and 3-5 rows. NO paragraph.
-- Images: Only add if critical to understanding (rare).
+⚠️ CRITICAL: Generate SUBSTANTIAL content matching the layout_type - empty or minimal content is UNACCEPTABLE!
+
+**Layout-Specific Requirements:**
+- **bullet_points**: Generate 4-6 concise, impactful bullet points (8-15 words each)
+- **narrative**: Generate 200-400 word paragraph explaining the concept in depth
+- **two_column**: Generate two distinct lists/sections (e.g., pros/cons, before/after)
+- **comparison**: Generate comparison data showing differences between 2-3 items
+- **table_data**: Generate table with headers and 4-6 data rows
+- **chart_data**: Generate numerical data suitable for visualization (specify chart_type: bar/line/pie)
+- **image_content**: Generate image description + 3-4 supporting bullet points
+- **quote**: Generate a powerful quote (20-50 words) + attribution + brief context
+- **timeline**: Generate 4-6 sequential events with dates/periods and descriptions
+
+⚠️ QUALITY STANDARDS:
+- Content must match the specified layout_type
+- Each bullet point should be 8-15 words
+- Paragraphs should explain concepts thoroughly (200+ words)
+- Tables should contain real comparative data
+- NO generic placeholders like "Point 1", "Point 2"
+- Content must be specific to the slide title and context
 
 Return format:
 {{
-  "points": ["Point 1", "Point 2"],
-  "paragraph": "Detailed explanation for detail slides...",
-  "image_description": "Only if needed...",
+  "layout_type": "{layout_type}",
+  "points": ["Specific point 1...", "Specific point 2..."],
+  "paragraph": "Detailed explanation (200+ words for narrative)...",
+  "image_description": "Specific visual description...",
   "table": {{
-    "headers": ["Column 1", "Column 2"],
-    "rows": [["Data1", "Data2"], ["Data3", "Data4"]]
+    "headers": ["Column 1", "Column 2", "Column 3"],
+    "rows": [["Data1", "Data2", "Data3"], ["Data4", "Data5", "Data6"]]
   }},
-  "suggested_slide_type": "content"  // Options: content, narrative, table, image
+  "chart_type": "bar",
+  "chart_data": {{
+    "labels": ["Q1", "Q2", "Q3", "Q4"],
+    "values": [45, 67, 82, 95]
+  }},
+  "quote_text": "Powerful quote text...",
+  "quote_author": "Author Name, Title",
+  "timeline_events": [
+    {{"date": "2020", "title": "Event 1", "description": "Details..."}},
+    {{"date": "2021", "title": "Event 2", "description": "Details..."}}
+  ],
+  "two_column_left": ["Left point 1", "Left point 2"],
+  "two_column_right": ["Right point 1", "Right point 2"],
+  "suggested_slide_type": "content"
 }}"""
 
 # -------------------------------------------------------------------------

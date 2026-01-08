@@ -10,7 +10,7 @@ class ContentAgent(BaseAgent):
         return 0.8  # More creative for content
     
     def get_max_tokens(self) -> int:
-        return 1500
+        return 3000  # 增加到3000以生成更丰富的内容
     
     def get_system_prompt(self) -> str:
         return CONTENT_SYSTEM
@@ -46,7 +46,8 @@ class ContentAgent(BaseAgent):
                 "current_content": ", ".join(slide.content) if slide.content else "",
                 "audience": context["audience"],
                 "template": context["template"],
-                "content_role": slide.content_role or "detail"  # Default to detail if not specified
+                "content_role": slide.content_role or "detail",  # Default to detail if not specified
+                "layout_type": slide.layout_type or "bullet_points"  # Default to bullet_points
             })
             
         # Execute batch if there are items
@@ -59,6 +60,10 @@ class ContentAgent(BaseAgent):
                     continue
                     
                 target_slide = slides[idx]
+                
+                # Update layout_type if returned
+                if "layout_type" in result:
+                    target_slide.layout_type = result["layout_type"]
                 
                 # Map basic fields
                 if "points" in result:
@@ -76,6 +81,29 @@ class ContentAgent(BaseAgent):
                     t_data = result["table"]
                     if "headers" in t_data and "rows" in t_data:
                         target_slide.table = TableData(headers=t_data["headers"], rows=t_data["rows"])
+                
+                # Handle chart data
+                if "chart_type" in result:
+                    target_slide.chart_type = result["chart_type"]
+                
+                # Handle quote data
+                if "quote_text" in result:
+                    target_slide.paragraph = result.get("quote_text", "")
+                    if "quote_author" in result:
+                        target_slide.paragraph += f"\n\n— {result['quote_author']}"
+                
+                # Handle timeline data
+                if "timeline_events" in result:
+                    # Convert timeline to bullet points for now
+                    events = result["timeline_events"]
+                    target_slide.content = [f"{e.get('date', '')}: {e.get('title', '')} - {e.get('description', '')}" for e in events]
+                
+                # Handle two-column layout
+                if "two_column_left" in result and "two_column_right" in result:
+                    left = result["two_column_left"]
+                    right = result["two_column_right"]
+                    # Store in content with separator
+                    target_slide.content = [f"LEFT: {p}" for p in left] + [f"RIGHT: {p}" for p in right]
                 
                 # Update slide type if suggested
                 if "suggested_slide_type" in result:

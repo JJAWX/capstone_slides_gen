@@ -13,7 +13,7 @@ class OutlineAgent(BaseAgent):
         return 0.7  # Creative but structured
     
     def get_max_tokens(self) -> int:
-        return 2000
+        return 3000  # 增加到3000以生成更详细的大纲
     
     def get_system_prompt(self) -> str:
         return OUTLINE_SYSTEM

@@ -10,7 +10,7 @@ class ReviewAgent(BaseAgent):
         return 0.3  # Precise and critical
     
     def get_max_tokens(self) -> int:
-        return 2000
+        return 4000  # 增加到4000以完整审查所有幻灯片
     
     def get_system_prompt(self) -> str:
         return REVIEW_SYSTEM
