@@ -1,7 +1,6 @@
 import logging
 from typing import Dict, Any
 from .models import DeckRequest
-from .pptx_generator import PPTXGenerator
 from .storage import deck_storage
 from .workflow.workflow_manager import WorkflowManager
 
@@ -24,7 +23,6 @@ class DeckGenerator:
 
     def __init__(self):
         self.workflow_manager = WorkflowManager()
-        self.pptx_generator = PPTXGenerator()
 
     async def generate_deck(
         self,
@@ -38,21 +36,17 @@ class DeckGenerator:
         try:
             logger.info(f"[{deck_id}] Starting deck generation via WorkflowManager")
 
-            # Execute sophisticated workflow
+            # Execute sophisticated workflow (包含PPTX生成)
             slides, design_config = await self.workflow_manager.execute_workflow(deck_id, request, storage)
 
-            # Final RENDER Stage (not part of content logic, but file creation)
-            await self._update_status(
-                storage, deck_id, "layout", 95,
-                "Rendering PowerPoint file..."
-            )
-            file_path = await self.pptx_generator.create_presentation(
-                deck_id=deck_id,
-                slides=slides,
-                template=request.template,
-                design_config=design_config,
-                title=request.prompt
-            )
+            # Workflow已经生成了PPTX文件，从workflow获取文件路径
+            pptx_files = list(self.workflow_manager.pptx_dir.glob(f"presentation_{deck_id}_*.pptx"))
+            if pptx_files:
+                # 使用最新的PPTX文件
+                file_path = str(sorted(pptx_files, key=lambda x: x.stat().st_mtime)[-1])
+                logger.info(f"[{deck_id}] Using generated PPTX: {file_path}")
+            else:
+                raise FileNotFoundError(f"No PPTX file found for deck {deck_id}")
 
             # Stage: DONE
             storage[deck_id]["status"] = "done"

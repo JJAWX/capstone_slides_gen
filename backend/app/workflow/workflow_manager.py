@@ -8,7 +8,11 @@ from ..agents.image_agent import ImageAgent
 from ..agents.image_search_agent import ImageSearchAgent
 from ..agents.layout_adjustment_agent import LayoutAdjustmentAgent
 from ..agents.chart_agent import ChartAgent
+from ..utils.simple_pptx_generator import SimplePPTXGenerator
 from ..models import DeckRequest, SlideContent
+from pathlib import Path
+from datetime import datetime
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -28,7 +32,7 @@ class WorkflowManager:
     8. 图片搜索 (Image Search) - Find images for sparse slides
     9. 布局调整 (Layout Adjustment) - Validate text overflow & image sizes
     10. 最终检查 (Final Review) - Quality review and polish
-    11. 生成完毕 (Generation Complete)
+    11. PPTX生成 (PPTX Generation) - Direct JSON to PPTX conversion using python-pptx
     """
 
     def __init__(self):
@@ -41,6 +45,20 @@ class WorkflowManager:
         self.image_search_agent = ImageSearchAgent()
         self.layout_adjustment_agent = LayoutAdjustmentAgent()
         self.chart_agent = ChartAgent()
+        self.pptx_generator = SimplePPTXGenerator()
+        
+        # Setup output directories
+        self.base_dir = Path(__file__).parent.parent.parent
+        self.output_dir = self.base_dir / "output"
+        self.outlines_dir = self.output_dir / "outlines"
+        self.structures_dir = self.output_dir / "structures"
+        self.contents_dir = self.output_dir / "contents"
+        self.pptx_dir = self.output_dir / "pptx"
+        
+        # Ensure all directories exist
+        for dir_path in [self.outlines_dir, self.structures_dir,
+                         self.contents_dir, self.pptx_dir]:
+            dir_path.mkdir(parents=True, exist_ok=True)
     
     async def execute_workflow(self, deck_id: str, request: DeckRequest, storage: Dict[str, Any]) -> tuple[List[SlideContent], Dict[str, Any]]:
         """
@@ -52,13 +70,25 @@ class WorkflowManager:
         await self._update_progress(storage, deck_id, "outline", 10, "📋 Creating strategic outline structure...")
         outline = await self.outline_agent.generate_outline(request)
         
+        # Save outline to file
+        outline_file = self._save_outline(outline, deck_id)
+        logger.info(f"Saved outline to: {outline_file}")
+        
         # Step 2: 权重布局 - Structure Analysis & Expansion
         await self._update_progress(storage, deck_id, "analyze", 18, "⚖️ Analyzing structure and allocating slides by weight...")
         slide_blueprints = self._expand_outline_to_slides(outline, request.slideCount)
         
+        # Save structure to file
+        structure_file = self._save_structure(slide_blueprints, outline.title, deck_id)
+        logger.info(f"Saved structure to: {structure_file}")
+        
         # Step 3: 内容生成 - Concurrent Content Development
         await self._update_progress(storage, deck_id, "content", 30, f"✍️ Generating content for {len(slide_blueprints)} slides...")
         detailed_slides = await self.content_agent.generate_all_content(slide_blueprints, request, outline.title)
+        
+        # Save content to files
+        content_files = self._save_contents(detailed_slides, deck_id)
+        logger.info(f"Saved {len(content_files)} content files")
 
         # Step 4: 图表生成 - Chart Generation for Data Visualization
         await self._update_progress(storage, deck_id, "charts", 36, "📊 Generating charts for data visualization...")
@@ -104,6 +134,12 @@ class WorkflowManager:
         # Step 10: 最终检查 - Final Review & Assembly
         await self._update_progress(storage, deck_id, "review", 90, "✅ Final quality review and assembly...")
         final_content = await self.review_agent.review_slides(laid_out_content, outline.title, request.audience)
+        
+        # Step 11: 生成PPTX - Generate PPTX directly from JSON
+        await self._update_progress(storage, deck_id, "generating", 95, "🎬 Generating PPTX file...")
+        pptx_path = self._generate_pptx(final_content, design_config, deck_id, outline.title, request.template)
+        
+        logger.info(f"✓ 工作流完成: {pptx_path}")
         
         return final_content, design_config
 
@@ -280,3 +316,96 @@ class WorkflowManager:
             storage[deck_id]["progress"] = progress
             storage[deck_id]["currentStep"] = step
         logger.info(f"[{deck_id}] {step}")
+    
+    # ==================== 文件保存方法 ====================
+    
+    def _save_outline(self, outline, deck_id: str) -> Path:
+        """保存大纲到JSON文件"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"outline_{deck_id}_{timestamp}.json"
+        filepath = self.outlines_dir / filename
+        
+        outline_data = {
+            "title": outline.title,
+            "sections": [
+                {
+                    "title": section.title,
+                    "description": section.description,
+                    "weight": section.weight,
+                    "key_points": section.key_points
+                }
+                for section in outline.sections
+            ]
+        }
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(outline_data, f, indent=2, ensure_ascii=False)
+        
+        return filepath
+    
+    def _save_structure(self, slide_blueprints: List[SlideContent], title: str, deck_id: str) -> Path:
+        """保存幻灯片结构到JSON文件"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"structure_{deck_id}_{timestamp}.json"
+        filepath = self.structures_dir / filename
+        
+        structure_data = {
+            "title": title,
+            "total_slides": len(slide_blueprints),
+            "slides": [slide.dict() for slide in slide_blueprints]
+        }
+        
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(structure_data, f, indent=2, ensure_ascii=False)
+        
+        return filepath
+    
+    def _save_contents(self, slides: List[SlideContent], deck_id: str) -> List[Path]:
+        """保存每张幻灯片的内容到单独的JSON文件"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        saved_files = []
+        
+        for idx, slide in enumerate(slides, 1):
+            filename = f"content_{deck_id}_{timestamp}_slide{idx:03d}.json"
+            filepath = self.contents_dir / filename
+            
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(slide.dict(), f, indent=2, ensure_ascii=False)
+            
+            saved_files.append(filepath)
+        
+        return saved_files
+    
+    def _generate_pptx(
+        self,
+        slides: List[SlideContent],
+        design_config: Dict[str, Any],
+        deck_id: str,
+        title: str,
+        template: str
+    ) -> Path:
+        """生成最终的PPTX文件"""
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"presentation_{deck_id}_{timestamp}.pptx"
+        filepath = self.pptx_dir / filename
+        
+        logger.info(f"开始生成PPTX: {title}")
+        logger.info(f"  - 幻灯片数量: {len(slides)}")
+        logger.info(f"  - 模板: {template}")
+        logger.info(f"  - 输出路径: {filepath}")
+        
+        # 转换SlideContent列表为字典列表
+        slides_data = [slide.dict() for slide in slides]
+        
+        # 使用SimplePPTXGenerator生成PPTX
+        result_path = self.pptx_generator.generate_pptx(
+            slides_data=slides_data,
+            design_config=design_config,
+            output_path=filepath,
+            title=title,
+            template=template
+        )
+        
+        logger.info(f"✓ PPTX生成完成: {result_path}")
+        
+        return result_path

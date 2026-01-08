@@ -27,9 +27,14 @@ wheels/
 .env
 .env.local
 
-# Output files
-output/*.pptx
+# Output files - all generated content
+output/outlines/
+output/structures/
+output/contents/
+output/charts/
+output/pptx/
 !output/.gitkeep
+!output/*/.gitkeep
 
 # Templates (if you add custom templates)
 templates/*.pptx
@@ -46,6 +51,3 @@ templates/*.pptx
 .DS_Store
 Thumbs.db
 
-# output
-.output/
-.backend/

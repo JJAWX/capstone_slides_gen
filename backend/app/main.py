@@ -28,7 +28,10 @@ app = FastAPI(title="Intelligent Slides Generator API")
 # Configure CORS for Next.js frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],
+    allow_origins=[
+        "http://localhost:3000",  # Next.js dev server
+        "http://localhost:3001",  # Alternative port
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
