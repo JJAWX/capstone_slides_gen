@@ -9,6 +9,7 @@ export type DeckStatus =
   | "images"
   | "adjust"
   | "review"
+  | "generating"
   | "done"
   | "error";
 

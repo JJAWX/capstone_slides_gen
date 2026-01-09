@@ -157,6 +157,9 @@ class SimplePPTXGenerator:
         table = slide_data.get("table", {})
         image_url = slide_data.get("image_url", "")
         
+        # 检查paragraph是否有实质内容（至少30个字符）
+        has_paragraph = paragraph and len(paragraph.strip()) >= 30
+        
         # 检查content是否有实质内容（排除占位符文本）
         has_real_content = False
         if content:
@@ -165,7 +168,7 @@ class SimplePPTXGenerator:
                     has_real_content = True
                     break
         
-        return has_real_content or bool(paragraph) or bool(table.get("headers")) or bool(image_url)
+        return has_real_content or has_paragraph or bool(table.get("headers")) or bool(image_url)
     
     def _create_slide(self, prs: Presentation, slide_data: Dict[str, Any], 
                       colors: Dict[str, RGBColor], slide_number: int, template: str):
@@ -174,16 +177,34 @@ class SimplePPTXGenerator:
         slide_type = slide_data.get("slideType", "content")
         layout_type = slide_data.get("layout_type", "bullet_points")
         
-        # 检查是否有实际内容，如果没有则强制使用bullet布局并显示提示
-        if slide_type != "title" and not self._has_content(slide_data):
+        # 添加调试日志
+        logger.info(f"创建幻灯片 {slide_number}: type={slide_type}, layout={layout_type}, "
+                   f"has_paragraph={bool(slide_data.get('paragraph'))}, "
+                   f"content_len={len(slide_data.get('content', []))}")
+        
+        # 对于 narrative 布局，不强制改成 bullet_points，让 _create_narrative_slide 处理 fallback
+        # 只对非 narrative 布局检查内容并使用兜底
+        if slide_type != "title" and layout_type != "narrative" and not self._has_content(slide_data):
             logger.warning(f"幻灯片 {slide_number} 内容为空，使用兜底内容")
-            # 使用标题生成兜底内容
             title = slide_data.get("title", "")
             slide_data["content"] = self._generate_fallback_content(title)
-            layout_type = "bullet_points"  # 强制使用bullet布局
+            layout_type = "bullet_points"
         
         # 优先检查是否有图表 - 有图表的幻灯片优先使用图表布局
         has_chart = slide_data.get("chart_url") and Path(slide_data.get("chart_url", "")).exists()
+        
+        # Helper functions to check if table/image have actual content
+        def has_valid_table(data):
+            table = data.get("table")
+            if not table:
+                return False
+            headers = table.get("headers", [])
+            rows = table.get("rows", [])
+            return bool(headers) and bool(rows)
+        
+        def has_valid_image(data):
+            url = data.get("image_url")
+            return bool(url) and len(url.strip()) > 0
         
         if slide_type == "title":
             self._create_title_slide(prs, slide_data, colors, template)
@@ -200,12 +221,13 @@ class SimplePPTXGenerator:
             self._create_quote_slide(prs, slide_data, colors)
         elif layout_type == "timeline":
             self._create_timeline_slide(prs, slide_data, colors)
-        elif layout_type == "table_data" or slide_data.get("table"):
-            self._create_table_slide(prs, slide_data, colors)
-        elif layout_type == "image_content" or slide_data.get("image_url"):
-            self._create_image_text_slide(prs, slide_data, colors)
         elif layout_type == "narrative" or slide_data.get("paragraph"):
+            # narrative 优先级提高，因为 table 和 image 可能是空壳
             self._create_narrative_slide(prs, slide_data, colors)
+        elif layout_type == "table_data" or has_valid_table(slide_data):
+            self._create_table_slide(prs, slide_data, colors)
+        elif layout_type == "image_content" or has_valid_image(slide_data):
+            self._create_image_text_slide(prs, slide_data, colors)
         else:
             self._create_bullet_slide(prs, slide_data, colors)
     
@@ -578,12 +600,30 @@ class SimplePPTXGenerator:
                                 colors: Dict[str, RGBColor]):
         """创建叙述/段落页"""
         slide = prs.slides.add_slide(prs.slide_layouts[6])
-        self._add_slide_title(slide, slide_data.get("title", ""), colors)
+        title = slide_data.get("title", "")
+        self._add_slide_title(slide, title, colors)
         
         paragraph_text = slide_data.get("paragraph", "")
+        
+        # 清理无效的 paragraph 内容（如 quote 残留）
+        if paragraph_text:
+            cleaned = paragraph_text.strip()
+            # 检查是否只是 quote 残留（如 "\n\n— " 或类似）
+            if len(cleaned) < 30 or cleaned.startswith("—") or cleaned == "\n\n— ":
+                paragraph_text = ""
+                logger.warning(f"Narrative slide '{title}' has invalid paragraph content, falling back to content")
+        
         if not paragraph_text:
             content = slide_data.get("content", [])
-            paragraph_text = " ".join(content)
+            if content and len(content) > 0:
+                # 合并 content 为段落，并增加连接词使其更流畅
+                paragraph_text = " ".join(content)
+                logger.info(f"Narrative slide '{title}': using content as paragraph ({len(paragraph_text)} chars)")
+            else:
+                # 根据标题生成有意义的 fallback 文本
+                title_words = title.replace("-", " ").replace("Part", "").strip()
+                paragraph_text = f"This section explores {title_words} in detail. {title_words} represents a critical aspect of the presentation that warrants careful consideration. Key factors include understanding the fundamental principles, examining practical applications, and identifying potential opportunities for improvement. Through this exploration, we aim to provide actionable insights that can be applied in real-world scenarios."
+                logger.warning(f"Narrative slide '{title}': generated fallback text ({len(paragraph_text)} chars)")
         
         paragraph_text = self._truncate_text(paragraph_text, MAX_PARAGRAPH_CHARS)
         
@@ -691,26 +731,46 @@ class SimplePPTXGenerator:
     
     def _create_chart_slide(self, prs: Presentation, slide_data: Dict[str, Any],
                             colors: Dict[str, RGBColor]):
-        """创建图表页"""
+        """创建图表页 - 左图右文布局"""
         slide = prs.slides.add_slide(prs.slide_layouts[6])
         self._add_slide_title(slide, slide_data.get("title", ""), colors)
         
+        # 左侧图表区域 (5.5英寸宽)
         chart_url = slide_data.get("chart_url", "")
         if chart_url and Path(chart_url).exists():
             try:
-                slide.shapes.add_picture(chart_url, Inches(1), Inches(1.2), width=Inches(8))
+                # 图表在左侧，宽度5.5英寸，高度3.5英寸
+                slide.shapes.add_picture(chart_url, Inches(0.5), Inches(1.2), width=Inches(5.5), height=Inches(3.5))
             except Exception as e:
                 logger.error(f"图表添加失败: {e}")
         
+        # 右侧解释文字区域 (3.5英寸宽)
         content = slide_data.get("content", [])
-        if content:
-            text_box = slide.shapes.add_textbox(Inches(0.5), Inches(4.6), Inches(9), Inches(0.8))
-            tf = text_box.text_frame
+        paragraph = slide_data.get("paragraph", "")
+        
+        # 右侧文字框
+        text_box = slide.shapes.add_textbox(Inches(6.2), Inches(1.2), Inches(3.3), Inches(3.8))
+        tf = text_box.text_frame
+        tf.word_wrap = True
+        
+        if paragraph:
+            # 如果有段落文字，显示段落
             p = tf.paragraphs[0]
-            p.text = " | ".join(content[:3])
-            p.font.size = Pt(12)
-            p.font.color.rgb = colors["secondary"]
-            p.alignment = PP_ALIGN.CENTER
+            p.text = self._truncate_text(paragraph, 300)
+            p.font.size = Pt(13)
+            p.font.color.rgb = colors["text"]
+            p.line_spacing = 1.4
+        elif content:
+            # 如果有bullet points，显示bullet列表
+            for i, point in enumerate(content[:5]):
+                if i == 0:
+                    p = tf.paragraphs[0]
+                else:
+                    p = tf.add_paragraph()
+                p.text = "• " + self._truncate_text(point, 60)
+                p.font.size = Pt(14)
+                p.font.color.rgb = colors["text"]
+                p.space_before = Pt(4)
     
     def _add_slide_title(self, slide, title: str, colors: Dict[str, RGBColor]):
         """添加幻灯片标题"""

@@ -197,17 +197,31 @@ Return format:
 # -------------------------------------------------------------------------
 # REVIEW AGENT
 # -------------------------------------------------------------------------
-REVIEW_SYSTEM = """You are a meticulous editor for business presentations.
-Your goal is to ensure consistency, flow, and quality across all slides.
-Handling diverse Content Types:
-- IF 'content' (bullet points): Polish for clarity and impact.
-- IF 'paragraph' (narrative): Enhance flow and readability.
-- IF 'table': Check headers and row data for consistency.
-- IF 'image_description': Refine the visual description.
+REVIEW_SYSTEM = """You are a careful editor for business presentations.
+Your role is to CHECK for errors and polish language ONLY - NOT to restructure or enforce format rules.
 
-You MUST respond with a valid JSON object preserving the structure of the input."""
+**Critical Rules:**
+1. PRESERVE content structure - do NOT change bullet points to paragraphs or vice versa
+2. PRESERVE content length - do NOT truncate long paragraphs or force bullet limits
+3. PRESERVE layout types - do NOT convert between different slide formats
+4. ONLY fix: grammar, spelling, clarity, tone consistency
+5. If content looks good, return it UNCHANGED
 
-REVIEW_USER = """Review and polish the following presentation slides.
+**What to Check:**
+- Grammar and spelling errors
+- Awkward phrasing or unclear sentences
+- Tone consistency (formal/casual based on audience)
+- Factual accuracy (if obvious)
+
+**What NOT to Change:**
+- Number of bullet points (can be 2-10, whatever ContentAgent created)
+- Paragraph length (can be 50-800 words, whatever ContentAgent created)
+- Slide structure (bullet points vs paragraph vs table)
+- Content amount or detail level
+
+You MUST respond with a valid JSON object preserving ALL original fields and structure."""
+
+REVIEW_USER = """Review and polish the following presentation slides - ONLY fix errors, do NOT restructure.
 
 Presentation Title: {title}
 Audience: {audience}
@@ -215,12 +229,18 @@ Audience: {audience}
 Slides Content (JSON format):
 {slides_text}
 
-Requirements:
-- Ensure tone consistency
-- Fix any grammatical errors
-- Improve clarity of text
-- Provide the polished version of ALL slides
-- PRESERVE the original 'slideType' and data fields (e.g. don't turn a table into bullet points).
+**Your Task:**
+1. Check each slide for grammar, spelling, and clarity issues
+2. Fix ONLY obvious errors
+3. If a slide is good, return it EXACTLY as-is (same content, same structure)
+4. Do NOT enforce any word count, bullet count, or format rules
+5. Do NOT convert between content types (bullet ↔ paragraph ↔ table)
+
+**Important:**
+- A slide with 1 long paragraph is VALID - do not force it into bullets
+- A slide with 8 bullet points is VALID - do not reduce to 6
+- A slide with very brief content is VALID - do not expand it
+- PRESERVE all original fields: title, slideType, content, paragraph, table, image_description
 
 Return format:
 {{
@@ -228,7 +248,7 @@ Return format:
     {{
       "title": "Title",
       "slideType": "content/narrative/table/image",
-      "content": ["P1", "P2"],
+      "content": ["P1", "P2", ...],
       "paragraph": "...",
       "image_description": "...",
       "table": {{ ... }}

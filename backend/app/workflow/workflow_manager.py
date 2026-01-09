@@ -195,8 +195,8 @@ class WorkflowManager:
             elif num_slides == 2:
                 # Small section: Section Title + 1 Detail with variety
                 layout1 = suggested_layouts[0] if len(suggested_layouts) > 0 else "bullet_points"
-                layout2 = suggested_layouts[1] if len(suggested_layouts) > 1 else layout_pool[layout_idx % len(layout_pool)]
-                layout_idx += 1
+                # Detail slides should use narrative by default
+                layout2 = "narrative"
                 
                 slide_blueprints.append(SlideContent(
                     title=section.title,
@@ -216,20 +216,13 @@ class WorkflowManager:
                 ))
                 
             elif num_slides == 3:
-                # Medium section: Vary with outline + different detail layouts
-                layouts = suggested_layouts[:3] if len(suggested_layouts) >= 3 else [
-                    "bullet_points", 
-                    layout_pool[layout_idx % len(layout_pool)],
-                    layout_pool[(layout_idx + 1) % len(layout_pool)]
-                ]
-                layout_idx += 2
-                
+                # Medium section: Vary with outline + detail (narrative) layouts
                 slide_blueprints.append(SlideContent(
                     title=section.title,
                     content=section.key_points,
                     slideType="content",
                     content_role="outline",
-                    layout_type=layouts[0]
+                    layout_type="bullet_points"
                 ))
                 
                 num_details = 2
@@ -244,12 +237,13 @@ class WorkflowManager:
                     else:
                         detail_content = [f"Detailed exploration of {section.title}"]
                     
+                    # Detail slides use narrative layout
                     slide_blueprints.append(SlideContent(
                         title=f"{section.title} - Part {i+1}",
                         content=detail_content,
                         slideType="content",
                         content_role="detail",
-                        layout_type=layouts[i + 1]
+                        layout_type="narrative"
                     ))
                     
             else:
@@ -262,13 +256,9 @@ class WorkflowManager:
                     layout_type="section_divider"
                 ))
                 
-                # Add detail slides with rotating layouts
+                # Add detail slides - all detail slides use narrative by default
                 num_details = num_slides - 2
                 for i in range(num_details):
-                    # Cycle through different layout types
-                    detail_layout = suggested_layouts[i + 1] if i + 1 < len(suggested_layouts) else layout_pool[layout_idx % len(layout_pool)]
-                    layout_idx += 1
-                    
                     # 使用section的key_points作为详情页的上下文
                     detail_content = []
                     if i < len(section.key_points):
@@ -278,12 +268,13 @@ class WorkflowManager:
                     else:
                         detail_content = section.key_points[:2] if section.key_points else [f"Exploration of {section.title}"]
                     
+                    # Detail slides use narrative layout for substantial content
                     slide_blueprints.append(SlideContent(
                         title=f"{section.title} - Part {i+1}",
                         content=detail_content,
                         slideType="content",
                         content_role="detail",
-                        layout_type=detail_layout
+                        layout_type="narrative"
                     ))
                 
                 # Add section summary (table)

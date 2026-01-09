@@ -86,11 +86,13 @@ class ContentAgent(BaseAgent):
                 if "chart_type" in result:
                     target_slide.chart_type = result["chart_type"]
                 
-                # Handle quote data
-                if "quote_text" in result:
-                    target_slide.paragraph = result.get("quote_text", "")
-                    if "quote_author" in result:
-                        target_slide.paragraph += f"\n\n— {result['quote_author']}"
+                # Handle quote data - only if quote_text has actual content
+                quote_text = result.get("quote_text", "")
+                if quote_text and len(quote_text.strip()) > 10:  # Must have substantial content
+                    target_slide.paragraph = quote_text
+                    quote_author = result.get("quote_author", "")
+                    if quote_author and len(quote_author.strip()) > 0:
+                        target_slide.paragraph += f"\n\n— {quote_author}"
                 
                 # Handle timeline data
                 if "timeline_events" in result:
@@ -116,5 +118,27 @@ class ContentAgent(BaseAgent):
                     elif stype == "image":
                         target_slide.slideType = "image"
                     # else keep 'content' or existing
+                
+                # CRITICAL: Validate content_role="detail" slides have content
+                # detail slides should have paragraph OR substantial content
+                if target_slide.content_role == "detail":
+                    has_paragraph = target_slide.paragraph and len(target_slide.paragraph.strip()) >= 30
+                    has_content = target_slide.content and any(len(c) > 20 for c in target_slide.content)
+                    
+                    if not has_paragraph and not has_content:
+                        # Generate fallback content for detail slides
+                        import logging
+                        logger = logging.getLogger(__name__)
+                        logger.warning(f"Detail slide '{target_slide.title}' has no content, generating fallback")
+                        target_slide.content = [
+                            f"Key aspects of {target_slide.title}",
+                            "Important considerations and details",
+                            "Practical applications and examples",
+                            "Future implications and recommendations"
+                        ]
+                    
+                    # Ensure detail slides use narrative layout if they have paragraph
+                    if has_paragraph:
+                        target_slide.layout_type = "narrative"
                     
         return slides
